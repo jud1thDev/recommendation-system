@@ -1,0 +1,179 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-06-21T13:30:00+09:00",
+  "description": "Mock user recommendation data. Authentication is assumed to exist elsewhere; this file only stores recommendation preferences and behavior signals.",
+  "users": [
+    {
+      "userId": "user-001",
+      "displayName": "민지",
+      "defaultPreferences": {
+        "relation": "친구",
+        "occasion": "생일",
+        "budget": 40000,
+        "traits": ["트렌디함", "포장중요"],
+        "avoidTags": ["고가", "건강/비타민"]
+      },
+      "recipientProfiles": [
+        {
+          "recipientId": "recipient-001",
+          "label": "친한 친구",
+          "relation": "친구",
+          "traits": ["트렌디함", "개인화", "포장중요"],
+          "avoidTags": ["건강/비타민"]
+        }
+      ],
+      "recentRecommendationInput": {
+        "relation": "친구",
+        "occasion": "생일",
+        "budget": 40000,
+        "traits": ["트렌디함", "포장중요"],
+        "avoidTags": ["건강/비타민"],
+        "clickHistory": [
+          {
+            "productId": "kakao-6993339",
+            "category": "뷰티/향수/바디",
+            "tags": ["뷰티/향수/바디", "조말론런던", "배송상품", "PACKAGE_GIFT"],
+            "priceValue": 34000,
+            "clickedAt": "2026-06-21T12:45:00+09:00"
+          },
+          {
+            "productId": "kakao-2259144",
+            "category": "뷰티/향수/바디",
+            "tags": ["뷰티/향수/바디", "디올", "배송상품", "CUSTOM_SERVICE_GIFT"],
+            "priceValue": 50000,
+            "clickedAt": "2026-06-21T12:41:00+09:00"
+          }
+        ]
+      }
+    },
+    {
+      "userId": "user-002",
+      "displayName": "준호",
+      "defaultPreferences": {
+        "relation": "부모님",
+        "occasion": "감사",
+        "budget": 70000,
+        "traits": ["고급스러움", "먹는것좋아함"],
+        "avoidTags": ["뷰티/향수/바디", "교환권"]
+      },
+      "recipientProfiles": [
+        {
+          "recipientId": "recipient-002",
+          "label": "어머니",
+          "relation": "부모님",
+          "traits": ["고급스러움", "실용적", "먹는것좋아함"],
+          "avoidTags": ["뷰티/향수/바디"]
+        }
+      ],
+      "recentRecommendationInput": {
+        "relation": "부모님",
+        "occasion": "감사",
+        "budget": 70000,
+        "traits": ["고급스러움", "먹는것좋아함"],
+        "avoidTags": ["뷰티/향수/바디", "교환권"],
+        "clickHistory": [
+          {
+            "productId": "kakao-7630727",
+            "category": "과일/신선식품",
+            "tags": ["과일/신선식품", "수플린", "배송상품", "2만원대~3만원대"],
+            "priceValue": 32900,
+            "clickedAt": "2026-06-21T11:20:00+09:00"
+          },
+          {
+            "productId": "kakao-13146569",
+            "category": "과일/신선식품",
+            "tags": ["과일/신선식품", "온브릭스", "배송상품", "4만원대~6만원대"],
+            "priceValue": 50000,
+            "clickedAt": "2026-06-21T11:16:00+09:00"
+          }
+        ]
+      }
+    },
+    {
+      "userId": "user-003",
+      "displayName": "서연",
+      "defaultPreferences": {
+        "relation": "직장동료",
+        "occasion": "응원",
+        "budget": 30000,
+        "traits": ["실용적"],
+        "avoidTags": ["고가", "개인화"]
+      },
+      "recipientProfiles": [
+        {
+          "recipientId": "recipient-003",
+          "label": "팀 동료",
+          "relation": "직장동료",
+          "traits": ["실용적"],
+          "avoidTags": ["고가"]
+        }
+      ],
+      "recentRecommendationInput": {
+        "relation": "직장동료",
+        "occasion": "응원",
+        "budget": 30000,
+        "traits": ["실용적"],
+        "avoidTags": ["고가", "개인화"],
+        "clickHistory": [
+          {
+            "productId": "kakao-2301047",
+            "category": "건강/비타민",
+            "tags": ["건강/비타민", "오쏘몰", "배송상품", "2만원대~3만원대"],
+            "priceValue": 34000,
+            "clickedAt": "2026-06-21T10:05:00+09:00"
+          },
+          {
+            "productId": "kakao-13688469",
+            "category": "리빙/주방",
+            "tags": ["리빙/주방", "레고트", "배송상품", "2만원대~3만원대"],
+            "priceValue": 39000,
+            "clickedAt": "2026-06-21T10:01:00+09:00"
+          }
+        ]
+      }
+    },
+    {
+      "userId": "user-004",
+      "displayName": "도윤",
+      "defaultPreferences": {
+        "relation": "연인",
+        "occasion": "기념일",
+        "budget": 70000,
+        "traits": ["트렌디함", "개인화", "포장중요"],
+        "avoidTags": ["건강/비타민", "과일/신선식품"]
+      },
+      "recipientProfiles": [
+        {
+          "recipientId": "recipient-004",
+          "label": "연인",
+          "relation": "연인",
+          "traits": ["트렌디함", "개인화", "포장중요"],
+          "avoidTags": ["건강/비타민", "과일/신선식품"]
+        }
+      ],
+      "recentRecommendationInput": {
+        "relation": "연인",
+        "occasion": "기념일",
+        "budget": 70000,
+        "traits": ["트렌디함", "개인화", "포장중요"],
+        "avoidTags": ["건강/비타민", "과일/신선식품"],
+        "clickHistory": [
+          {
+            "productId": "kakao-9245998",
+            "category": "뷰티/향수/바디",
+            "tags": ["뷰티/향수/바디", "조말론런던", "배송상품", "PACKAGE_GIFT"],
+            "priceValue": 34000,
+            "clickedAt": "2026-06-21T09:32:00+09:00"
+          },
+          {
+            "productId": "kakao-1148475",
+            "category": "뷰티/향수/바디",
+            "tags": ["뷰티/향수/바디", "조말론런던", "배송상품", "할인"],
+            "priceValue": 60350,
+            "clickedAt": "2026-06-21T09:27:00+09:00"
+          }
+        ]
+      }
+    }
+  ]
+}

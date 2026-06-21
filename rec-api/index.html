@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>선물 추천 시스템</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="controls" aria-label="추천 조건">
+        <div class="title-row">
+          <div>
+            <p class="eyebrow">Kakao Gift Ranking</p>
+            <h1>선물 추천</h1>
+          </div>
+          <p id="resultCount" class="result-count">0개</p>
+        </div>
+
+        <form id="preferenceForm" class="form">
+          <label>
+            관계
+            <select name="relation" id="relation"></select>
+          </label>
+
+          <label>
+            상황
+            <select name="occasion" id="occasion"></select>
+          </label>
+
+          <label>
+            예산
+            <select name="budget" id="budget">
+              <option value="20000">2만원 이하</option>
+              <option value="40000" selected>4만원 이하</option>
+              <option value="70000">7만원 이하</option>
+              <option value="120000">12만원 이하</option>
+              <option value="999999">상관없음</option>
+            </select>
+          </label>
+
+          <fieldset>
+            <legend>선호 성향</legend>
+            <div id="traits" class="chip-grid"></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>피할 조건</legend>
+            <div id="avoidTags" class="chip-grid"></div>
+          </fieldset>
+        </form>
+      </section>
+
+      <section class="recommendations" aria-label="추천 상품">
+        <div class="toolbar">
+          <div>
+            <p class="eyebrow">Recommendations</p>
+            <h2>추천 결과</h2>
+          </div>
+          <button id="resetClicks" class="ghost-button" type="button">클릭 초기화</button>
+        </div>
+        <div id="cards" class="cards"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
