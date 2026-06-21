@@ -1,5 +1,7 @@
 import json
 import os
+import urllib.error
+import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
@@ -104,6 +106,133 @@ def recommend(payload):
     return recommendations
 
 
+_LLM_CANDIDATE_CAP = 60
+
+
+def llm_rank(payload):
+    api_key = os.environ.get("OPENAI_API_KEY", "")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY not set")
+
+    model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+    base_url = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
+
+    preference = payload.get("preference", {})
+    click_history = payload.get("clickHistory", [])
+    candidates = payload.get("candidateItems", [])
+    limit = int(payload.get("limit") or 8)
+
+    # Pre-trim candidates to keep token count sane.
+    if len(candidates) > _LLM_CANDIDATE_CAP:
+        print(
+            f"[core-api] llm_rank: trimming {len(candidates)} candidates to {_LLM_CANDIDATE_CAP} by wishCount"
+        )
+        candidates = sorted(candidates, key=lambda c: c.get("wishCount", 0), reverse=True)[
+            :_LLM_CANDIDATE_CAP
+        ]
+
+    candidate_id_set = {c["id"] for c in candidates}
+
+    slim_candidates = [
+        {
+            "id": c["id"],
+            "name": c.get("name", ""),
+            "brand": c.get("brand", ""),
+            "category": c.get("category", ""),
+            "priceValue": c.get("priceValue"),
+            "wishCount": c.get("wishCount"),
+            "tags": c.get("tags", []),
+            "relations": c.get("relations", []),
+            "occasions": c.get("occasions", []),
+            "traits": c.get("traits", []),
+        }
+        for c in candidates
+    ]
+
+    system_prompt = (
+        "You are a gift-recommendation ranker. "
+        "Select and rank ONLY from the provided candidate list. "
+        "Return valid json ONLY — no prose, no markdown — matching this schema: "
+        '{"recommendations": [{"id": "<candidate id>", "reason": "<Korean, user-facing>", '
+        '"badges": ["<short label>", ...], "score": <0.0-1.0 or null>}]}. '
+        "Order by best fit first. Do not invent ids not in the candidate list."
+    )
+
+    user_message = json.dumps(
+        {
+            "preference": preference,
+            "clickHistory": click_history,
+            "limit": limit,
+            "candidates": slim_candidates,
+        },
+        ensure_ascii=False,
+    )
+
+    request_body = json.dumps(
+        {
+            "model": model,
+            "max_tokens": 1024,
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message},
+            ],
+        },
+        ensure_ascii=False,
+    ).encode("utf-8")
+
+    req = urllib.request.Request(
+        f"{base_url}/chat/completions",
+        data=request_body,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        raw = json.loads(resp.read().decode("utf-8"))
+
+    content = raw["choices"][0]["message"]["content"]
+    parsed = json.loads(content)
+    llm_items = parsed.get("recommendations", [])
+
+    seen_ids = set()
+    valid = []
+    for item in llm_items:
+        item_id = item.get("id")
+        if not item_id or item_id not in candidate_id_set or item_id in seen_ids:
+            continue
+        seen_ids.add(item_id)
+        # Find the source candidate for default-filling.
+        src = next((c for c in candidates if c["id"] == item_id), {})
+        reason = item.get("reason")
+        if not reason or not isinstance(reason, str):
+            reason = src.get("name", item_id)
+        badges = item.get("badges")
+        if not isinstance(badges, list):
+            badges = src.get("traits", [])[:2]
+        raw_score = item.get("score")
+        score = None
+        if raw_score is not None:
+            try:
+                score = round(max(0.0, min(1.0, float(raw_score))), 4)
+            except (TypeError, ValueError):
+                score = None
+        valid.append({"id": item_id, "reason": reason, "badges": badges, "score": score})
+        if len(valid) >= limit:
+            break
+
+    if not valid:
+        raise ValueError("LLM returned zero valid candidate ids")
+
+    for rank_index, item in enumerate(valid, start=1):
+        item["rank"] = rank_index
+
+    return valid, model
+
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/healthz":
@@ -131,15 +260,28 @@ class Handler(BaseHTTPRequestHandler):
                     },
                 )
                 return
-            response(
-                self,
-                200,
-                {
-                    "requestId": payload.get("requestId"),
-                    "recommendations": recommend(payload),
-                    "model": {"provider": "local", "name": "candidate-ranker", "version": "0.1.0"},
-                },
-            )
+            try:
+                recs, llm_model_name = llm_rank(payload)
+                response(
+                    self,
+                    200,
+                    {
+                        "requestId": payload.get("requestId"),
+                        "recommendations": recs,
+                        "model": {"provider": "openai", "name": llm_model_name, "version": "0.1.0"},
+                    },
+                )
+            except Exception as llm_exc:
+                print(f"[core-api] llm fallback: {llm_exc}")
+                response(
+                    self,
+                    200,
+                    {
+                        "requestId": payload.get("requestId"),
+                        "recommendations": recommend(payload),
+                        "model": {"provider": "local", "name": "candidate-ranker", "version": "0.1.0"},
+                    },
+                )
         except Exception as exc:
             response(self, 500, {"error": {"code": "INTERNAL_ERROR", "message": str(exc)}})
 
