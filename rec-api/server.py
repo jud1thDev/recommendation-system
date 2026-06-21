@@ -123,11 +123,16 @@ def build_candidates(preference):
 
 
 def build_event(payload):
+    request_id = payload.get("requestId") or payload.get("context", {}).get("requestId")
+    impression_id = payload.get("impressionId") or payload.get("context", {}).get("impressionId")
     event = {
         "eventId": payload.get("eventId") or f"evt-{uuid4().hex[:12]}",
         "userId": payload.get("userId") or "user-001",
         "type": payload.get("type") or "unknown",
         "occurredAt": payload.get("occurredAt") or time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "requestId": request_id,
+        "impressionId": impression_id,
+        "eventKey": payload.get("eventKey") or impression_id or request_id,
         "context": payload.get("context", {}),
         "product": payload.get("product"),
         "properties": payload.get("properties", {}),
@@ -159,9 +164,14 @@ def get_kafka_producer():
     if KAFKA_PRODUCER is None:
         KAFKA_PRODUCER = KafkaProducer(
             bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
+            key_serializer=lambda value: str(value).encode("utf-8"),
             value_serializer=lambda value: json.dumps(value, ensure_ascii=False).encode("utf-8"),
         )
     return KAFKA_PRODUCER
+
+
+def kafka_event_key(event):
+    return event.get("eventKey") or event.get("impressionId") or event.get("requestId") or event.get("eventId")
 
 
 def publish_event(event):
@@ -169,7 +179,7 @@ def publish_event(event):
         producer = get_kafka_producer()
         if producer is None:
             return False
-        producer.send(KAFKA_EVENTS_TOPIC, event).get(timeout=5)
+        producer.send(KAFKA_EVENTS_TOPIC, key=kafka_event_key(event), value=event).get(timeout=5)
         return True
     except Exception as exc:
         print(f"[rec-api] failed to publish event to kafka: {exc}")

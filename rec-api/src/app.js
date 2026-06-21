@@ -108,28 +108,48 @@ function getPreferences() {
 async function render() {
   const seq = ++state.renderSeq;
   const preferences = getPreferences();
-  const recommendations = await requestRecommendations(preferences);
+  const result = await requestRecommendations(preferences);
   if (seq !== state.renderSeq) return;
 
+  const recommendations = result.recommendations;
   resultCount.textContent = `${recommendations.length}개`;
   cards.innerHTML = recommendations.length
     ? recommendations.map(renderCard).join("")
     : `<div class="empty">조건에 맞는 상품이 없습니다.</div>`;
 
-  recommendations.forEach((product) => collectEvent("product_impression", product));
+  recommendations.forEach((product) => collectEvent("product_impression", product, {}, {
+    requestId: result.requestId,
+    impressionId: product.impressionId,
+  }));
 
   cards.querySelectorAll("[data-product-id]").forEach((card) => {
-    card.addEventListener("click", () => saveClick(card.dataset.productId));
+    card.addEventListener("click", () => saveClick(card.dataset.productId, {
+      requestId: card.dataset.requestId,
+      impressionId: card.dataset.impressionId,
+      source: "card",
+    }));
+  });
+
+  cards.querySelectorAll("[data-product-link]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.stopPropagation();
+      saveClick(link.dataset.productId, {
+        requestId: link.dataset.requestId,
+        impressionId: link.dataset.impressionId,
+        source: "kakao_gift_link",
+      });
+    });
   });
 }
 
 async function requestRecommendations(preferences) {
+  const requestId = `rec-${Date.now()}`;
   try {
     const response = await fetch(recommendationUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        requestId: `rec-${Date.now()}`,
+        requestId,
         user: { userId },
         context: { sessionId },
         preference: {
@@ -145,27 +165,46 @@ async function requestRecommendations(preferences) {
     });
     if (!response.ok) throw new Error(`recommendation request failed: ${response.status}`);
     const data = await response.json();
-    return mergeRecommendations(data.recommendations || []);
+    const responseRequestId = data.requestId || requestId;
+    return {
+      requestId: responseRequestId,
+      recommendations: mergeRecommendations(data.recommendations || [], responseRequestId),
+    };
   } catch (error) {
     console.warn(error);
-    return recommend(preferences, state.products);
+    return {
+      requestId,
+      recommendations: recommend(preferences, state.products).map((product, index) =>
+        withImpression(product, requestId, index + 1),
+      ),
+    };
   }
 }
 
-function mergeRecommendations(recommendations) {
+function mergeRecommendations(recommendations, requestId) {
   const byId = new Map(state.products.map((product) => [product.id, product]));
   return recommendations
-    .map((recommendation) => {
+    .map((recommendation, index) => {
       const product = byId.get(recommendation.id);
       if (!product) return null;
-      return {
+      return withImpression({
         ...product,
+        rank: recommendation.rank || index + 1,
         score: recommendation.score,
         reason: recommendation.reason || "추천 조건과 잘 맞는 상품입니다.",
         badges: (recommendation.badges || ["추천"]).map((label) => ({ label, tone: "strong" })),
-      };
+      }, requestId, recommendation.rank || index + 1);
     })
     .filter(Boolean);
+}
+
+function withImpression(product, requestId, rank) {
+  return {
+    ...product,
+    rank,
+    requestId,
+    impressionId: `imp-${requestId}-${rank}-${product.id}`,
+  };
 }
 
 function recommend(preferences, products) {
@@ -233,7 +272,12 @@ function makeBadges(product, relationMatch, occasionMatch, traitMatches) {
 
 function renderCard(product, index) {
   return `
-    <article class="card" data-product-id="${escapeHtml(product.id)}">
+    <article
+      class="card"
+      data-product-id="${escapeHtml(product.id)}"
+      data-request-id="${escapeHtml(product.requestId || "")}"
+      data-impression-id="${escapeHtml(product.impressionId || "")}"
+    >
       <div class="image-wrap">
         <img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" loading="lazy" />
         <span class="rank">${index + 1}</span>
@@ -255,13 +299,22 @@ function renderCard(product, index) {
             .join("")}
         </div>
         <p class="reason">${escapeHtml(product.reason)}</p>
-        <a class="link" href="${escapeHtml(product.url)}" target="_blank" rel="noreferrer">카카오 선물하기</a>
+        <a
+          class="link"
+          href="${escapeHtml(product.url)}"
+          target="_blank"
+          rel="noreferrer"
+          data-product-link
+          data-product-id="${escapeHtml(product.id)}"
+          data-request-id="${escapeHtml(product.requestId || "")}"
+          data-impression-id="${escapeHtml(product.impressionId || "")}"
+        >카카오 선물하기</a>
       </div>
     </article>
   `;
 }
 
-function saveClick(productId) {
+function saveClick(productId, meta = {}) {
   const product = state.products.find((item) => item.id === productId);
   if (!product) return;
 
@@ -279,10 +332,13 @@ function saveClick(productId) {
   ].slice(0, 12);
 
   localStorage.setItem("gift-click-history", JSON.stringify(state.clicks));
-  collectEvent("product_click", product, click);
+  collectEvent("product_click", product, click, meta);
 }
 
-function collectEvent(type, product, click = {}) {
+function collectEvent(type, product, click = {}, meta = {}) {
+  click = click || {};
+  const requestId = meta.requestId || product.requestId;
+  const impressionId = meta.impressionId || product.impressionId;
   fetch(eventUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -290,12 +346,18 @@ function collectEvent(type, product, click = {}) {
       userId,
       type,
       occurredAt: click.clickedAt || new Date().toISOString(),
-      context: { sessionId },
+      requestId,
+      impressionId,
+      context: { sessionId, requestId, impressionId },
       product: {
         productId: product.id,
         category: product.category,
         tags: product.tags,
         priceValue: product.priceValue,
+      },
+      properties: {
+        source: meta.source,
+        rank: product.rank,
       },
     }),
   }).catch((error) => console.warn(error));
@@ -319,7 +381,8 @@ function escapeHtml(value) {
 }
 
 window.renderGiftRecommendations = function renderGiftRecommendations(recommendations) {
-  const products = mergeRecommendations(recommendations);
+  const requestId = `manual-${Date.now()}`;
+  const products = mergeRecommendations(recommendations, requestId);
 
   resultCount.textContent = `${products.length}개`;
   cards.innerHTML = products.map(renderCard).join("");
