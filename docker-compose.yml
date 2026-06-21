@@ -58,10 +58,7 @@ services:
       DATA_DIR: "/app/data"
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       KAFKA_EVENTS_TOPIC: "rec-events"
-      REDIS_URL: "redis://redis:6379/0"
-      W_LLM: "${W_LLM:-0.3}"
-      W_RT: "${W_RT:-0.6}"
-      W_POP: "${W_POP:-0.1}"
+      CANDIDATE_K: "${CANDIDATE_K:-36}"
     ports:
       - "8000:8000"
     volumes:
@@ -69,7 +66,6 @@ services:
     depends_on:
       - core-api
       - kafka
-      - redis
 
   event-worker:
     build:
