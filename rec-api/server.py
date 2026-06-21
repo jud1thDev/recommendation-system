@@ -110,7 +110,7 @@ def build_candidates(preference):
     return candidates
 
 
-def generate_candidates(preference, filtered, k):
+def generate_candidates(preference, filtered, k, recent_categories=None, recent_tags=None):
     """Select top-K candidates from the filtered pool using relevance + diversity (R4).
 
     Relevance formula:
@@ -119,6 +119,12 @@ def generate_candidates(preference, filtered, k):
             + 2 * |preference.traits ∩ p.traits|
             + min(p.wishCount / 100000, 2)
 
+    Recency reservation: up to R = max(1, k // 6) slots are reserved for items
+    whose category is in recent_categories OR whose tags intersect recent_tags.
+    These are selected by relevance desc and guaranteed into the result even if
+    their popularity is low. If recent_categories/recent_tags are empty (new user),
+    behaviour is identical to before.
+
     Diversity: cap per-category at cat_cap = max(1, ceil(k * 0.6)).
     If fewer than k items chosen after cap pass, fill remainder ignoring the cap.
     Always returns min(k, len(filtered)) items.
@@ -126,6 +132,8 @@ def generate_candidates(preference, filtered, k):
     relation = preference.get("relation", "")
     occasion = preference.get("occasion", "")
     pref_traits = set(preference.get("traits", []))
+    recent_categories = recent_categories or set()
+    recent_tags = recent_tags or set()
 
     def relevance(p):
         rel = 0
@@ -139,13 +147,34 @@ def generate_candidates(preference, filtered, k):
 
     sorted_items = sorted(filtered, key=lambda p: (relevance(p), p.get("wishCount", 0)), reverse=True)
 
+    # --- Recency reservation ---
+    reserved = []
+    if recent_categories or recent_tags:
+        R = max(1, k // 6)
+        recent_pool = [
+            p for p in sorted_items
+            if p.get("category", "") in recent_categories
+            or bool(recent_tags & set(p.get("tags", [])))
+        ]
+        reserved = recent_pool[:R]
+
+    reserved_ids = {p["id"] for p in reserved}
+
+    # --- Diversity-capped fill for the remaining k - len(reserved) slots ---
+    remaining_k = k - len(reserved)
     cat_cap = max(1, math.ceil(k * 0.6))
-    chosen = []
+    chosen = list(reserved)
     cat_counts = {}
+    # Pre-count categories already occupied by reserved items
+    for p in reserved:
+        cat = p.get("category", "")
+        cat_counts[cat] = cat_counts.get(cat, 0) + 1
 
     for p in sorted_items:
-        if len(chosen) >= k:
+        if len(chosen) - len(reserved) >= remaining_k:
             break
+        if p["id"] in reserved_ids:
+            continue
         cat = p.get("category", "")
         if cat_counts.get(cat, 0) < cat_cap:
             chosen.append(p)
@@ -160,7 +189,7 @@ def generate_candidates(preference, filtered, k):
             if p["id"] not in chosen_ids:
                 chosen.append(p)
 
-    return chosen
+    return chosen[:k]
 
 
 def build_event(payload):
@@ -227,16 +256,36 @@ def publish_event(event):
         return False
 
 
+def derive_recent_signals(click_history):
+    """Return (recent_categories, recent_tags) sets from clickHistory entries."""
+    recent_categories = set()
+    recent_tags = set()
+    for click in click_history:
+        if click.get("category"):
+            recent_categories.add(click["category"])
+        for tag in click.get("tags", []):
+            recent_tags.add(tag)
+    return recent_categories, recent_tags
+
+
 def call_core_api(payload):
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    request = urllib.request.Request(
-        f"{CORE_API_URL}/v1/recommendations",
-        data=body,
-        headers={"Content-Type": "application/json; charset=utf-8"},
-        method="POST",
-    )
-    with urllib.request.urlopen(request, timeout=20) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    last_exc = None
+    for attempt in range(2):
+        try:
+            request = urllib.request.Request(
+                f"{CORE_API_URL}/v1/recommendations",
+                data=body,
+                headers={"Content-Type": "application/json; charset=utf-8"},
+                method="POST",
+            )
+            with urllib.request.urlopen(request, timeout=20) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except (urllib.error.URLError, TimeoutError) as exc:
+            last_exc = exc
+            if attempt == 0:
+                print(f"[rec-api] core-api attempt {attempt + 1} failed: {exc}, retrying...")
+    raise last_exc
 
 
 # ---------------------------------------------------------------------------
@@ -246,7 +295,17 @@ def call_core_api(payload):
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/healthz":
-            send_json(self, 200, {"ok": True, "service": "rec-api", "coreApiUrl": CORE_API_URL})
+            core_ok = False
+            try:
+                req = urllib.request.Request(
+                    f"{CORE_API_URL}/healthz",
+                    method="GET",
+                )
+                with urllib.request.urlopen(req, timeout=2):
+                    core_ok = True
+            except Exception:
+                pass
+            send_json(self, 200, {"ok": True, "service": "rec-api", "coreApiUrl": CORE_API_URL, "coreApiOk": core_ok})
             return
         if self.path in ("/data/gifts.json", "/data/users.json", "/data/user-events.json"):
             filename = self.path.rsplit("/", 1)[1]
@@ -287,6 +346,7 @@ class Handler(BaseHTTPRequestHandler):
                 incoming = read_json(self)
                 preference = incoming.get("preference", {})
                 limit = int(incoming.get("limit") or 8)
+                request_id = incoming.get("requestId") or f"rec-{uuid4().hex[:12]}"
 
                 filtered = build_candidates(preference)
                 if not filtered:
@@ -297,29 +357,37 @@ class Handler(BaseHTTPRequestHandler):
                             "error": {
                                 "code": "NO_CANDIDATES",
                                 "message": "No products remain after rec-api filtering",
-                                "requestId": incoming.get("requestId") or f"rec-{uuid4().hex[:12]}",
+                                "requestId": request_id,
                             }
                         },
                     )
                     return
 
-                candidates = generate_candidates(preference, filtered, CANDIDATE_K)
-                request_id = incoming.get("requestId") or f"rec-{uuid4().hex[:12]}"
+                click_history = incoming.get("clickHistory", [])
+                recent_categories, recent_tags = derive_recent_signals(click_history)
+                candidates = generate_candidates(
+                    preference, filtered, CANDIDATE_K,
+                    recent_categories=recent_categories,
+                    recent_tags=recent_tags,
+                )
+                print(f"[rec-api] req={request_id} candidates={len(candidates)} -> core")
 
                 payload = {
                     "requestId": request_id,
                     "user": incoming.get("user") or {"userId": "user-001"},
                     "preference": preference,
-                    "clickHistory": incoming.get("clickHistory", []),
+                    "clickHistory": click_history,
                     "candidateItems": candidates,
                     "limit": limit,
                 }
 
                 try:
                     result = call_core_api(payload)
+                    model_provider = (result.get("model") or {}).get("provider", "core-api")
+                    print(f"[rec-api] req={request_id} served by {model_provider}")
                     send_json(self, 200, {**result, "candidateCount": len(candidates)})
                 except (urllib.error.URLError, TimeoutError) as exc:
-                    print(f"[rec-api] core-api unavailable, popularity fallback: {exc}")
+                    print(f"[rec-api] req={request_id} core failed: {exc} -> fallback")
                     picked = sorted(candidates, key=lambda c: c.get("wishCount", 0), reverse=True)[:limit]
                     recs = [
                         {

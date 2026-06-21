@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import urllib.error
@@ -212,6 +213,47 @@ def recommend(payload):
 _LLM_CANDIDATE_CAP = 60
 
 
+def _llm_cache_key(payload):
+    fingerprint = {
+        "model": os.environ.get("OPENAI_MODEL", "gpt-4o-mini"),
+        "candidate_ids": sorted(c["id"] for c in payload.get("candidateItems", [])),
+        "preference": payload.get("preference", {}),
+        "limit": payload.get("limit"),
+        "click_ids": sorted(
+            c["productId"] for c in payload.get("clickHistory", []) if c and c.get("productId")
+        ),
+    }
+    digest = hashlib.sha256(
+        json.dumps(fingerprint, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+    return "llmrank:" + digest
+
+
+def cached_llm_rank(payload):
+    redis = get_redis_client()
+    key = _llm_cache_key(payload)
+
+    if redis is not None:
+        try:
+            cached = redis.get(key)
+            if cached is not None:
+                data = json.loads(cached)
+                return data["recs"], data["model_name"], True
+        except Exception as exc:
+            print(f"[core-api] redis cache GET failed: {exc}")
+
+    recs, model_name = llm_rank(payload)
+
+    if redis is not None:
+        try:
+            ttl = int(os.environ.get("LLM_CACHE_TTL", "300"))
+            redis.set(key, json.dumps({"recs": recs, "model_name": model_name}), ex=ttl)
+        except Exception as exc:
+            print(f"[core-api] redis cache SET failed: {exc}")
+
+    return recs, model_name, False
+
+
 def llm_rank(payload):
     api_key = os.environ.get("OPENAI_API_KEY", "")
     if not api_key:
@@ -367,14 +409,14 @@ class Handler(BaseHTTPRequestHandler):
                 return
             payload = with_recent_behavior(payload)
             try:
-                recs, llm_model_name = llm_rank(payload)
+                recs, llm_model_name, cached_bool = cached_llm_rank(payload)
                 response(
                     self,
                     200,
                     {
                         "requestId": payload.get("requestId"),
                         "recommendations": recs,
-                        "model": {"provider": "openai", "name": llm_model_name, "version": "0.1.0"},
+                        "model": {"provider": "openai", "name": llm_model_name, "version": "0.1.0", "cached": cached_bool},
                     },
                 )
             except Exception as llm_exc:

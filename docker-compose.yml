@@ -33,6 +33,12 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
 
   core-api:
     build:
@@ -47,7 +53,14 @@ services:
     ports:
       - "8001:8001"
     depends_on:
-      - redis
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; urllib.request.urlopen('http://localhost:8001/healthz',timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
 
   rec-api:
     build:
@@ -64,8 +77,16 @@ services:
     volumes:
       - ./data:/app/data
     depends_on:
-      - core-api
-      - kafka
+      core-api:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; urllib.request.urlopen('http://localhost:8000/healthz',timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
 
   event-worker:
     build:
@@ -76,5 +97,7 @@ services:
       REDIS_URL: "redis://redis:6379/0"
       MAX_EVENTS_PER_KEY: "200"
     depends_on:
-      - kafka
-      - redis
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_healthy
