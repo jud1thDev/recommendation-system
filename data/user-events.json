@@ -534,6 +534,2074 @@
         "priceValue": 39000
       },
       "properties": {}
+    },
+    {
+      "eventId": "evt-1249cc2248de",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:33.060Z",
+      "requestId": "rec-1782022085469",
+      "impressionId": "imp-rec-1782022085469-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022085469-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022085469",
+        "impressionId": "imp-rec-1782022085469-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-fdabe63518df",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:33.222Z",
+      "requestId": "rec-1782022085469",
+      "impressionId": "imp-rec-1782022085469-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022085469-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022085469",
+        "impressionId": "imp-rec-1782022085469-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-c31a48900d23",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:33.622Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-2-kakao-2467388",
+      "eventKey": "imp-rec-1782022353604-2-kakao-2467388",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-2-kakao-2467388"
+      },
+      "product": {
+        "productId": "kakao-2467388",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_170",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "rank": 2
+      }
+    },
+    {
+      "eventId": "evt-ab8421afc8ec",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:33.622Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-3-kakao-832235",
+      "eventKey": "imp-rec-1782022353604-3-kakao-832235",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-3-kakao-832235"
+      },
+      "product": {
+        "productId": "kakao-832235",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_33",
+          "뷰티/향수/바디",
+          "Shipping",
+          "맥(MAC)",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 38000
+      },
+      "properties": {
+        "rank": 3
+      }
+    },
+    {
+      "eventId": "evt-cbeb4ad23d42",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:33.622Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-5-kakao-6489599",
+      "eventKey": "imp-rec-1782022353604-5-kakao-6489599",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-5-kakao-6489599"
+      },
+      "product": {
+        "productId": "kakao-6489599",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_133",
+          "뷰티/향수/바디",
+          "Shipping",
+          "아로마티카",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT",
+          "증정품",
+          "할인"
+        ],
+        "priceValue": 28900
+      },
+      "properties": {
+        "rank": 5
+      }
+    },
+    {
+      "eventId": "evt-5522381f5ddc",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:33.622Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "rank": 1
+      }
+    },
+    {
+      "eventId": "evt-9672ac05f145",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:33.622Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-4-kakao-4569159",
+      "eventKey": "imp-rec-1782022353604-4-kakao-4569159",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-4-kakao-4569159"
+      },
+      "product": {
+        "productId": "kakao-4569159",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_95",
+          "뷰티/향수/바디",
+          "Shipping",
+          "그랑핸드",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 35000
+      },
+      "properties": {
+        "rank": 4
+      }
+    },
+    {
+      "eventId": "evt-66aa39f9c7ef",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:33.622Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-6-kakao-2383657",
+      "eventKey": "imp-rec-1782022353604-6-kakao-2383657",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-6-kakao-2383657"
+      },
+      "product": {
+        "productId": "kakao-2383657",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_119",
+          "뷰티/향수/바디",
+          "Shipping",
+          "탬버린즈",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 32000
+      },
+      "properties": {
+        "rank": 6
+      }
+    },
+    {
+      "eventId": "evt-aa560782a39b",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:33.623Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-7-kakao-2240056",
+      "eventKey": "imp-rec-1782022353604-7-kakao-2240056",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-7-kakao-2240056"
+      },
+      "product": {
+        "productId": "kakao-2240056",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_59",
+          "뷰티/향수/바디",
+          "Shipping",
+          "모로칸오일",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 39000
+      },
+      "properties": {
+        "rank": 7
+      }
+    },
+    {
+      "eventId": "evt-95e826579cce",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:33.623Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-8-kakao-7695934",
+      "eventKey": "imp-rec-1782022353604-8-kakao-7695934",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-8-kakao-7695934"
+      },
+      "product": {
+        "productId": "kakao-7695934",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_144",
+          "뷰티/향수/바디",
+          "Shipping",
+          "센녹",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "PACKAGE",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 25600
+      },
+      "properties": {
+        "rank": 8
+      }
+    },
+    {
+      "eventId": "evt-5ffd395d4573",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:34.181Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-487960148f4e",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:34.372Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-f09d2fdae392",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:34.564Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-d85c004e2fe2",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:34.986Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-51da00bb0775",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:35.162Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-86f300a075c6",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:35.404Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-10e7f1ee7a9a",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:35.654Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-3e6ea3f92747",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:35.936Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-4ef923c35783",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:36.179Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-58bb34212f0c",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:36.421Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-d8439497c451",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:36.661Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-f491953ada98",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:36.895Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-1d74cada0188",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:37.094Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-56a834545e0b",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:37.272Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-134c7a1b8bb3",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:37.447Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-5d87893d69a4",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:37.619Z",
+      "requestId": "rec-1782022353604",
+      "impressionId": "imp-rec-1782022353604-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022353604-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022353604",
+        "impressionId": "imp-rec-1782022353604-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-34f609e6738d",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:41.733Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022361703-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "rank": 1
+      }
+    },
+    {
+      "eventId": "evt-8d42524686d1",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:41.734Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-3-kakao-832235",
+      "eventKey": "imp-rec-1782022361703-3-kakao-832235",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-3-kakao-832235"
+      },
+      "product": {
+        "productId": "kakao-832235",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_33",
+          "뷰티/향수/바디",
+          "Shipping",
+          "맥(MAC)",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 38000
+      },
+      "properties": {
+        "rank": 3
+      }
+    },
+    {
+      "eventId": "evt-499c6bcfacb7",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:41.734Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-2-kakao-2467388",
+      "eventKey": "imp-rec-1782022361703-2-kakao-2467388",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-2-kakao-2467388"
+      },
+      "product": {
+        "productId": "kakao-2467388",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_170",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "rank": 2
+      }
+    },
+    {
+      "eventId": "evt-b02f92d7bf8e",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:41.734Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-5-kakao-6489599",
+      "eventKey": "imp-rec-1782022361703-5-kakao-6489599",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-5-kakao-6489599"
+      },
+      "product": {
+        "productId": "kakao-6489599",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_133",
+          "뷰티/향수/바디",
+          "Shipping",
+          "아로마티카",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT",
+          "증정품",
+          "할인"
+        ],
+        "priceValue": 28900
+      },
+      "properties": {
+        "rank": 5
+      }
+    },
+    {
+      "eventId": "evt-2bea314d940e",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:41.734Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-4-kakao-4569159",
+      "eventKey": "imp-rec-1782022361703-4-kakao-4569159",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-4-kakao-4569159"
+      },
+      "product": {
+        "productId": "kakao-4569159",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_95",
+          "뷰티/향수/바디",
+          "Shipping",
+          "그랑핸드",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 35000
+      },
+      "properties": {
+        "rank": 4
+      }
+    },
+    {
+      "eventId": "evt-722e3c40f1d9",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:41.734Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-6-kakao-2383657",
+      "eventKey": "imp-rec-1782022361703-6-kakao-2383657",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-6-kakao-2383657"
+      },
+      "product": {
+        "productId": "kakao-2383657",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_119",
+          "뷰티/향수/바디",
+          "Shipping",
+          "탬버린즈",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 32000
+      },
+      "properties": {
+        "rank": 6
+      }
+    },
+    {
+      "eventId": "evt-7fbb5435be4a",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:41.734Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-7-kakao-2240056",
+      "eventKey": "imp-rec-1782022361703-7-kakao-2240056",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-7-kakao-2240056"
+      },
+      "product": {
+        "productId": "kakao-2240056",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_59",
+          "뷰티/향수/바디",
+          "Shipping",
+          "모로칸오일",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 39000
+      },
+      "properties": {
+        "rank": 7
+      }
+    },
+    {
+      "eventId": "evt-46e6aae7e675",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:41.734Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-8-kakao-7695934",
+      "eventKey": "imp-rec-1782022361703-8-kakao-7695934",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-8-kakao-7695934"
+      },
+      "product": {
+        "productId": "kakao-7695934",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_144",
+          "뷰티/향수/바디",
+          "Shipping",
+          "센녹",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "PACKAGE",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 25600
+      },
+      "properties": {
+        "rank": 8
+      }
+    },
+    {
+      "eventId": "evt-48d21a2ae204",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:44.000Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022361703-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-ea1cf4c228fe",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:44.318Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022361703-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-b650786b1aa8",
+      "userId": "user-001",
+      "type": "product_click",
+      "occurredAt": "2026-06-21T06:12:45.177Z",
+      "requestId": "rec-1782022361703",
+      "impressionId": "imp-rec-1782022361703-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022361703-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022361703",
+        "impressionId": "imp-rec-1782022361703-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "source": "card"
+      }
+    },
+    {
+      "eventId": "evt-3361d610902e",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:48.730Z",
+      "requestId": "rec-1782022368705",
+      "impressionId": "imp-rec-1782022368705-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022368705-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022368705",
+        "impressionId": "imp-rec-1782022368705-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "rank": 1
+      }
+    },
+    {
+      "eventId": "evt-b658145c198e",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:48.730Z",
+      "requestId": "rec-1782022368705",
+      "impressionId": "imp-rec-1782022368705-4-kakao-4569159",
+      "eventKey": "imp-rec-1782022368705-4-kakao-4569159",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022368705",
+        "impressionId": "imp-rec-1782022368705-4-kakao-4569159"
+      },
+      "product": {
+        "productId": "kakao-4569159",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_95",
+          "뷰티/향수/바디",
+          "Shipping",
+          "그랑핸드",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 35000
+      },
+      "properties": {
+        "rank": 4
+      }
+    },
+    {
+      "eventId": "evt-5b531cf24303",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:48.730Z",
+      "requestId": "rec-1782022368705",
+      "impressionId": "imp-rec-1782022368705-2-kakao-2467388",
+      "eventKey": "imp-rec-1782022368705-2-kakao-2467388",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022368705",
+        "impressionId": "imp-rec-1782022368705-2-kakao-2467388"
+      },
+      "product": {
+        "productId": "kakao-2467388",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_170",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "rank": 2
+      }
+    },
+    {
+      "eventId": "evt-d46272fcf42a",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:48.730Z",
+      "requestId": "rec-1782022368705",
+      "impressionId": "imp-rec-1782022368705-3-kakao-832235",
+      "eventKey": "imp-rec-1782022368705-3-kakao-832235",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022368705",
+        "impressionId": "imp-rec-1782022368705-3-kakao-832235"
+      },
+      "product": {
+        "productId": "kakao-832235",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_33",
+          "뷰티/향수/바디",
+          "Shipping",
+          "맥(MAC)",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 38000
+      },
+      "properties": {
+        "rank": 3
+      }
+    },
+    {
+      "eventId": "evt-385c79a7ca90",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:48.730Z",
+      "requestId": "rec-1782022368705",
+      "impressionId": "imp-rec-1782022368705-6-kakao-2383657",
+      "eventKey": "imp-rec-1782022368705-6-kakao-2383657",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022368705",
+        "impressionId": "imp-rec-1782022368705-6-kakao-2383657"
+      },
+      "product": {
+        "productId": "kakao-2383657",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_119",
+          "뷰티/향수/바디",
+          "Shipping",
+          "탬버린즈",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 32000
+      },
+      "properties": {
+        "rank": 6
+      }
+    },
+    {
+      "eventId": "evt-0649e0a4a5eb",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:48.730Z",
+      "requestId": "rec-1782022368705",
+      "impressionId": "imp-rec-1782022368705-5-kakao-6489599",
+      "eventKey": "imp-rec-1782022368705-5-kakao-6489599",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022368705",
+        "impressionId": "imp-rec-1782022368705-5-kakao-6489599"
+      },
+      "product": {
+        "productId": "kakao-6489599",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_133",
+          "뷰티/향수/바디",
+          "Shipping",
+          "아로마티카",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT",
+          "증정품",
+          "할인"
+        ],
+        "priceValue": 28900
+      },
+      "properties": {
+        "rank": 5
+      }
+    },
+    {
+      "eventId": "evt-188d190d021e",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:48.730Z",
+      "requestId": "rec-1782022368705",
+      "impressionId": "imp-rec-1782022368705-7-kakao-2240056",
+      "eventKey": "imp-rec-1782022368705-7-kakao-2240056",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022368705",
+        "impressionId": "imp-rec-1782022368705-7-kakao-2240056"
+      },
+      "product": {
+        "productId": "kakao-2240056",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_59",
+          "뷰티/향수/바디",
+          "Shipping",
+          "모로칸오일",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 39000
+      },
+      "properties": {
+        "rank": 7
+      }
+    },
+    {
+      "eventId": "evt-42b7016e89bb",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:48.730Z",
+      "requestId": "rec-1782022368705",
+      "impressionId": "imp-rec-1782022368705-8-kakao-7695934",
+      "eventKey": "imp-rec-1782022368705-8-kakao-7695934",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022368705",
+        "impressionId": "imp-rec-1782022368705-8-kakao-7695934"
+      },
+      "product": {
+        "productId": "kakao-7695934",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_144",
+          "뷰티/향수/바디",
+          "Shipping",
+          "센녹",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "PACKAGE",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 25600
+      },
+      "properties": {
+        "rank": 8
+      }
+    },
+    {
+      "eventId": "evt-97d2f460bf47",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:49.644Z",
+      "requestId": "rec-1782022369626",
+      "impressionId": "imp-rec-1782022369626-2-kakao-2467388",
+      "eventKey": "imp-rec-1782022369626-2-kakao-2467388",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022369626",
+        "impressionId": "imp-rec-1782022369626-2-kakao-2467388"
+      },
+      "product": {
+        "productId": "kakao-2467388",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_170",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "rank": 2
+      }
+    },
+    {
+      "eventId": "evt-ad9b5c5f8e7d",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:49.644Z",
+      "requestId": "rec-1782022369626",
+      "impressionId": "imp-rec-1782022369626-1-kakao-6312758",
+      "eventKey": "imp-rec-1782022369626-1-kakao-6312758",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022369626",
+        "impressionId": "imp-rec-1782022369626-1-kakao-6312758"
+      },
+      "product": {
+        "productId": "kakao-6312758",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_14",
+          "뷰티/향수/바디",
+          "Shipping",
+          "헤라",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 36000
+      },
+      "properties": {
+        "rank": 1
+      }
+    },
+    {
+      "eventId": "evt-a2a2c3744db3",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:49.645Z",
+      "requestId": "rec-1782022369626",
+      "impressionId": "imp-rec-1782022369626-4-kakao-4569159",
+      "eventKey": "imp-rec-1782022369626-4-kakao-4569159",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022369626",
+        "impressionId": "imp-rec-1782022369626-4-kakao-4569159"
+      },
+      "product": {
+        "productId": "kakao-4569159",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_95",
+          "뷰티/향수/바디",
+          "Shipping",
+          "그랑핸드",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 35000
+      },
+      "properties": {
+        "rank": 4
+      }
+    },
+    {
+      "eventId": "evt-632c5235921e",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:49.644Z",
+      "requestId": "rec-1782022369626",
+      "impressionId": "imp-rec-1782022369626-3-kakao-832235",
+      "eventKey": "imp-rec-1782022369626-3-kakao-832235",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022369626",
+        "impressionId": "imp-rec-1782022369626-3-kakao-832235"
+      },
+      "product": {
+        "productId": "kakao-832235",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_33",
+          "뷰티/향수/바디",
+          "Shipping",
+          "맥(MAC)",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "CUSTOM_SERVICE",
+          "CUSTOM_SERVICE_GIFT",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 38000
+      },
+      "properties": {
+        "rank": 3
+      }
+    },
+    {
+      "eventId": "evt-14152dce2a9a",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:49.645Z",
+      "requestId": "rec-1782022369626",
+      "impressionId": "imp-rec-1782022369626-5-kakao-6489599",
+      "eventKey": "imp-rec-1782022369626-5-kakao-6489599",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022369626",
+        "impressionId": "imp-rec-1782022369626-5-kakao-6489599"
+      },
+      "product": {
+        "productId": "kakao-6489599",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_133",
+          "뷰티/향수/바디",
+          "Shipping",
+          "아로마티카",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT",
+          "증정품",
+          "할인"
+        ],
+        "priceValue": 28900
+      },
+      "properties": {
+        "rank": 5
+      }
+    },
+    {
+      "eventId": "evt-3eb5f2dd2eb1",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:49.645Z",
+      "requestId": "rec-1782022369626",
+      "impressionId": "imp-rec-1782022369626-6-kakao-2383657",
+      "eventKey": "imp-rec-1782022369626-6-kakao-2383657",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022369626",
+        "impressionId": "imp-rec-1782022369626-6-kakao-2383657"
+      },
+      "product": {
+        "productId": "kakao-2383657",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_119",
+          "뷰티/향수/바디",
+          "Shipping",
+          "탬버린즈",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 32000
+      },
+      "properties": {
+        "rank": 6
+      }
+    },
+    {
+      "eventId": "evt-086b574f36c3",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:49.645Z",
+      "requestId": "rec-1782022369626",
+      "impressionId": "imp-rec-1782022369626-7-kakao-2240056",
+      "eventKey": "imp-rec-1782022369626-7-kakao-2240056",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022369626",
+        "impressionId": "imp-rec-1782022369626-7-kakao-2240056"
+      },
+      "product": {
+        "productId": "kakao-2240056",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_59",
+          "뷰티/향수/바디",
+          "Shipping",
+          "모로칸오일",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "단독",
+          "PACKAGE",
+          "PACKAGE_GIFT"
+        ],
+        "priceValue": 39000
+      },
+      "properties": {
+        "rank": 7
+      }
+    },
+    {
+      "eventId": "evt-a02c8959d131",
+      "userId": "user-001",
+      "type": "product_impression",
+      "occurredAt": "2026-06-21T06:12:49.645Z",
+      "requestId": "rec-1782022369626",
+      "impressionId": "imp-rec-1782022369626-8-kakao-7695934",
+      "eventKey": "imp-rec-1782022369626-8-kakao-7695934",
+      "context": {
+        "sessionId": "session-a5006d8e-67be-497f-9536-20db202ff9f7",
+        "requestId": "rec-1782022369626",
+        "impressionId": "imp-rec-1782022369626-8-kakao-7695934"
+      },
+      "product": {
+        "productId": "kakao-7695934",
+        "category": "뷰티/향수/바디",
+        "tags": [
+          "kakao_gift",
+          "ranking_trending",
+          "rank_144",
+          "뷰티/향수/바디",
+          "Shipping",
+          "센녹",
+          "20000_39999",
+          "2만원대~3만원대",
+          "배송상품",
+          "ON_SALE",
+          "PACKAGE",
+          "PACKAGE_GIFT",
+          "할인"
+        ],
+        "priceValue": 25600
+      },
+      "properties": {
+        "rank": 8
+      }
     }
   ]
 }
