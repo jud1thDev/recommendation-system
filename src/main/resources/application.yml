@@ -1,0 +1,7 @@
+server:
+  port: 8080
+
+anthropic:
+  # 모델명은 환경변수 LLM_MODEL 로 주입(기본 claude-opus-4-8). API 키는 SDK가 ANTHROPIC_API_KEY 에서 직접 읽는다.
+  model: ${LLM_MODEL:claude-opus-4-8}
+  max-tokens: ${LLM_MAX_TOKENS:1024}

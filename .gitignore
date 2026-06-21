@@ -1,0 +1,16 @@
+# Secrets — never commit
+.env
+
+# Build output
+.gradle/
+build/
+bin/
+
+# Leaf-agent harness — 로컬 전용 (커밋하지 않음)
+.claude/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
