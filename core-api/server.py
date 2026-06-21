@@ -191,7 +191,7 @@ def llm_rank(payload):
         method="POST",
     )
 
-    with urllib.request.urlopen(req, timeout=10) as resp:
+    with urllib.request.urlopen(req, timeout=18) as resp:
         raw = json.loads(resp.read().decode("utf-8"))
 
     content = raw["choices"][0]["message"]["content"]
