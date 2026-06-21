@@ -30,7 +30,11 @@ async function init() {
   fillSelect("relation", uniqueFlat("relations"), "친구");
   fillSelect("occasion", uniqueFlat("occasions"), "생일");
   fillChips("traits", uniqueFlat("traits"));
-  fillChips("avoidTags", pickAvoidTags());
+  fillChips("avoidTags", [
+    { label: "뷰티/향수", value: "뷰티/향수/바디" },
+    { label: "주방/리빙", value: "리빙/주방" },
+    { label: "각인·맞춤", value: "CUSTOM_SERVICE" },
+  ]);
 
   form.addEventListener("change", render);
   resetClicks.addEventListener("click", () => {
@@ -56,7 +60,7 @@ function toLlmItem(product) {
     tags: product.filterTags || [],
     relations: product.relations || [],
     occasions: product.occasions || [],
-    traits: product.traits || [],
+    traits: (product.recommendationMeta && product.recommendationMeta.traits) || product.traits || [],
   };
 }
 
@@ -75,20 +79,19 @@ function fillSelect(id, values, selected) {
 function fillChips(id, values) {
   const node = document.querySelector(`#${id}`);
   node.innerHTML = values
-    .map(
-      (value) => `
+    .map((item) => {
+      const value = typeof item === "object" ? item.value : item;
+      const label = typeof item === "object" ? item.label : item;
+      return `
         <label class="chip">
           <input type="checkbox" name="${id}" value="${escapeHtml(value)}" />
-          <span>${escapeHtml(value)}</span>
+          <span>${escapeHtml(label)}</span>
         </label>
-      `,
-    )
+      `;
+    })
     .join("");
 }
 
-function pickAvoidTags() {
-  return ["배송상품", "교환권", "고가", "건강/비타민", "뷰티/향수/바디", "디저트/케이크"];
-}
 
 function getPreferences() {
   const formData = new FormData(form);
