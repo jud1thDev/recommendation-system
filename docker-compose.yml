@@ -42,8 +42,12 @@ services:
       OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
       OPENAI_MODEL: "${OPENAI_MODEL:-gpt-4o-mini}"
       OPENAI_BASE_URL: "${OPENAI_BASE_URL:-https://api.openai.com/v1}"
+      REDIS_URL: "redis://redis:6379/0"
+      RECENT_EVENT_LIMIT: "30"
     ports:
       - "8001:8001"
+    depends_on:
+      - redis
 
   rec-api:
     build:

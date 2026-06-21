@@ -3,6 +3,7 @@ import math
 import mimetypes
 import os
 import random
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -29,6 +30,8 @@ CORE_API_URL = os.environ.get("CORE_API_URL", "http://localhost:8001").rstrip("/
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS")
 KAFKA_EVENTS_TOPIC = os.environ.get("KAFKA_EVENTS_TOPIC", "rec-events")
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+ALLOWED_EVENT_TYPES = {"product_impression", "product_click", "add_to_cart"}
+EVENT_FILE_LOCK = threading.Lock()
 
 KAFKA_PRODUCER = None
 REDIS_CLIENT = None
@@ -79,7 +82,9 @@ def load_json(filename, fallback):
 def write_json(filename, payload):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     path = DATA_DIR / filename
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp_path = path.with_suffix(f"{path.suffix}.tmp")
+    tmp_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp_path.replace(path)
 
 
 def to_candidate(product):
@@ -117,7 +122,7 @@ def build_candidates(preference):
     return candidates
 
 
-def append_event(payload):
+def build_event(payload):
     event = {
         "eventId": payload.get("eventId") or f"evt-{uuid4().hex[:12]}",
         "userId": payload.get("userId") or "user-001",
@@ -127,11 +132,24 @@ def append_event(payload):
         "product": payload.get("product"),
         "properties": payload.get("properties", {}),
     }
-    events = load_json("user-events.json", {"schemaVersion": "1.0", "events": []})
-    events.setdefault("schemaVersion", "1.0")
-    events.setdefault("events", []).append(event)
-    write_json("user-events.json", events)
     return event
+
+
+def append_event(event):
+    with EVENT_FILE_LOCK:
+        events = load_json("user-events.json", {"schemaVersion": "1.0", "events": []})
+        events.setdefault("schemaVersion", "1.0")
+        events.setdefault("events", []).append(event)
+        write_json("user-events.json", events)
+
+
+def try_append_event(event):
+    try:
+        append_event(event)
+        return True
+    except Exception as exc:
+        print(f"[rec-api] failed to append event locally: {exc}")
+        return False
 
 
 def get_kafka_producer():
@@ -436,9 +454,26 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             if self.path == "/v1/events":
-                event = append_event(read_json(self))
+                event = build_event(read_json(self))
+                if event["type"] not in ALLOWED_EVENT_TYPES:
+                    send_json(
+                        self,
+                        400,
+                        {
+                            "error": {
+                                "code": "INVALID_EVENT_TYPE",
+                                "message": "type must be one of product_impression, product_click, add_to_cart",
+                            }
+                        },
+                    )
+                    return
                 kafkaPublished = publish_event(event)
-                send_json(self, 201, {"event": event, "kafkaPublished": kafkaPublished})
+                localPersisted = try_append_event(event)
+                send_json(
+                    self,
+                    201,
+                    {"event": event, "kafkaPublished": kafkaPublished, "localPersisted": localPersisted},
+                )
                 return
 
             if self.path == "/v1/recommendations":
@@ -475,6 +510,7 @@ class Handler(BaseHTTPRequestHandler):
                 core_payload = {
                     "requestId": request_id,
                     "user": user_info,
+                    "context": incoming.get("context", {}),
                     "preference": preference,
                     "clickHistory": incoming.get("clickHistory", []),
                     "candidateItems": candidates,

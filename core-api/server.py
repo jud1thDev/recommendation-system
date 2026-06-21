@@ -4,6 +4,16 @@ import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+try:
+    from redis import Redis
+except ImportError:
+    Redis = None
+
+
+REDIS_URL = os.environ.get("REDIS_URL")
+RECENT_EVENT_LIMIT = int(os.environ.get("RECENT_EVENT_LIMIT", "30"))
+REDIS_CLIENT = None
+
 
 def response(handler, status, payload):
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
@@ -32,7 +42,88 @@ def summarize_clicks(click_history):
     return categories, tags
 
 
-def make_reason(product, preference, trait_matches, clicked_category):
+def get_redis_client():
+    global REDIS_CLIENT
+    if not REDIS_URL or Redis is None:
+        return None
+    if REDIS_CLIENT is None:
+        REDIS_CLIENT = Redis.from_url(REDIS_URL, decode_responses=True)
+    return REDIS_CLIENT
+
+
+def event_to_behavior(event):
+    product = event.get("product") or {}
+    product_id = product.get("productId") or product.get("id")
+    if not product_id:
+        return None
+    return {
+        "productId": product_id,
+        "category": product.get("category"),
+        "tags": product.get("tags", []),
+        "priceValue": product.get("priceValue"),
+        "eventType": event.get("type"),
+        "occurredAt": event.get("occurredAt"),
+    }
+
+
+def read_recent_events(redis, keys):
+    events = []
+    seen = set()
+    for key in keys:
+        for raw in redis.lrange(key, 0, RECENT_EVENT_LIMIT - 1):
+            try:
+                event = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+            event_key = event.get("eventId") or raw
+            if event_key in seen:
+                continue
+            seen.add(event_key)
+            events.append(event)
+    return events[:RECENT_EVENT_LIMIT]
+
+
+def load_recent_behavior(payload):
+    user_id = (payload.get("user") or {}).get("userId")
+    session_id = (payload.get("context") or {}).get("sessionId")
+    redis = get_redis_client()
+    if redis is None or (not user_id and not session_id):
+        return {"clickHistory": [], "impressionHistory": []}
+
+    click_keys = []
+    impression_keys = []
+    if user_id:
+        click_keys.append(f"clicks:user:{user_id}")
+        impression_keys.append(f"impressions:user:{user_id}")
+    if session_id:
+        click_keys.append(f"clicks:session:{session_id}")
+        impression_keys.append(f"impressions:session:{session_id}")
+
+    try:
+        click_history = [event_to_behavior(event) for event in read_recent_events(redis, click_keys)]
+        impression_history = [event_to_behavior(event) for event in read_recent_events(redis, impression_keys)]
+    except Exception as exc:
+        print(f"[core-api] redis behavior unavailable: {exc}")
+        return {"clickHistory": [], "impressionHistory": []}
+
+    return {
+        "clickHistory": [item for item in click_history if item],
+        "impressionHistory": [item for item in impression_history if item],
+    }
+
+
+def with_recent_behavior(payload):
+    recent_behavior = load_recent_behavior(payload)
+    payload = dict(payload)
+    payload["clickHistory"] = [
+        *payload.get("clickHistory", []),
+        *recent_behavior["clickHistory"],
+    ]
+    payload["recentBehavior"] = recent_behavior
+    return payload
+
+
+def make_reason(product, preference, trait_matches, recent_category):
     reasons = []
     relation = preference.get("relation")
     occasion = preference.get("occasion")
@@ -42,7 +133,7 @@ def make_reason(product, preference, trait_matches, clicked_category):
         reasons.append(f"{occasion} 상황과 잘 맞음")
     if trait_matches:
         reasons.append(f"{', '.join(trait_matches)} 성향 반영")
-    if clicked_category:
+    if recent_category:
         reasons.append(f"최근 본 {product.get('category')} 선호 반영")
     if not reasons:
         reasons.append("후보군 안에서 인기도와 조건 적합도가 높은 상품")
@@ -66,6 +157,9 @@ def recommend(payload):
     preference = payload.get("preference", {})
     products = payload.get("candidateItems", [])
     click_categories, click_tags = summarize_clicks(payload.get("clickHistory", []))
+    impression_categories, impression_tags = summarize_clicks(
+        payload.get("recentBehavior", {}).get("impressionHistory", [])
+    )
     preferred_traits = set(preference.get("traits", []))
 
     ranked = []
@@ -75,6 +169,8 @@ def recommend(payload):
         trait_matches = [trait for trait in product.get("traits", []) if trait in preferred_traits]
         clicked_category = product.get("category") in click_categories
         clicked_tag = any(tag in click_tags for tag in product.get("tags", []))
+        impression_category = product.get("category") in impression_categories
+        impression_tag = any(tag in impression_tags for tag in product.get("tags", []))
         wish_score = min(product.get("wishCount", 0) / 100000, 2)
         score = (
             (4 if relation_match else 0)
@@ -82,13 +178,20 @@ def recommend(payload):
             + (len(trait_matches) * 3)
             + (2 if clicked_category else 0)
             + (1.5 if clicked_tag else 0)
+            + (0.8 if impression_category else 0)
+            + (0.5 if impression_tag else 0)
             + wish_score
         )
         ranked.append(
             {
                 "id": product["id"],
                 "score": round(min(score / 14, 1), 4),
-                "reason": make_reason(product, preference, trait_matches, clicked_category),
+                "reason": make_reason(
+                    product,
+                    preference,
+                    trait_matches,
+                    clicked_category or impression_category,
+                ),
                 "badges": make_badges(product, relation_match, occasion_match, trait_matches),
                 "_sortScore": score,
                 "_wishCount": product.get("wishCount", 0),
@@ -119,6 +222,7 @@ def llm_rank(payload):
 
     preference = payload.get("preference", {})
     click_history = payload.get("clickHistory", [])
+    recent_behavior = payload.get("recentBehavior", {})
     candidates = payload.get("candidateItems", [])
     limit = int(payload.get("limit") or 8)
 
@@ -162,6 +266,7 @@ def llm_rank(payload):
         {
             "preference": preference,
             "clickHistory": click_history,
+            "recentBehavior": recent_behavior,
             "limit": limit,
             "candidates": slim_candidates,
         },
@@ -260,6 +365,7 @@ class Handler(BaseHTTPRequestHandler):
                     },
                 )
                 return
+            payload = with_recent_behavior(payload)
             try:
                 recs, llm_model_name = llm_rank(payload)
                 response(

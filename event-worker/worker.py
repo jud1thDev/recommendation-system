@@ -17,6 +17,16 @@ EVENT_KEY_PREFIXES = {
 }
 
 
+def deserialize_event(value):
+    if value is None:
+        return None
+    try:
+        return json.loads(value.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        print(f"[event-worker] skipping invalid kafka message: {exc}")
+        return None
+
+
 def connect_consumer():
     while True:
         try:
@@ -26,7 +36,7 @@ def connect_consumer():
                 auto_offset_reset="earliest",
                 enable_auto_commit=True,
                 group_id="rec-event-worker",
-                value_deserializer=lambda value: json.loads(value.decode("utf-8")),
+                value_deserializer=deserialize_event,
             )
         except Exception as exc:
             print(f"[event-worker] waiting for kafka: {exc}")
@@ -71,6 +81,8 @@ def main():
 
     for message in consumer:
         event = message.value
+        if not isinstance(event, dict):
+            continue
         try:
             store_event(redis, event)
             print(

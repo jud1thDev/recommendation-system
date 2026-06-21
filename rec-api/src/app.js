@@ -113,6 +113,8 @@ async function render() {
     ? recommendations.map(renderCard).join("")
     : `<div class="empty">조건에 맞는 상품이 없습니다.</div>`;
 
+  recommendations.forEach((product) => collectEvent("product_impression", product));
+
   cards.querySelectorAll("[data-product-id]").forEach((card) => {
     card.addEventListener("click", () => saveClick(card.dataset.productId));
   });
@@ -126,6 +128,7 @@ async function requestRecommendations(preferences) {
       body: JSON.stringify({
         requestId: `rec-${Date.now()}`,
         user: { userId },
+        context: { sessionId },
         preference: {
           relation: preferences.relation,
           occasion: preferences.occasion,
@@ -276,14 +279,14 @@ function saveClick(productId) {
   collectEvent("product_click", product, click);
 }
 
-function collectEvent(type, product, click) {
+function collectEvent(type, product, click = {}) {
   fetch(eventUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       userId,
       type,
-      occurredAt: click.clickedAt,
+      occurredAt: click.clickedAt || new Date().toISOString(),
       context: { sessionId },
       product: {
         productId: product.id,
