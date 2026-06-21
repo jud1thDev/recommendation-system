@@ -96,7 +96,7 @@ def to_candidate(product):
         "tags": product.get("filterTags", []),
         "relations": product.get("relations", []),
         "occasions": product.get("occasions", []),
-        "traits": product.get("traits", []),
+        "traits": (product.get("recommendationMeta") or {}).get("traits") or product.get("traits", []),
     }
 
 
