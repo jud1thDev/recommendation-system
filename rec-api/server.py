@@ -129,11 +129,15 @@ def get_kafka_producer():
 
 
 def publish_event(event):
-    producer = get_kafka_producer()
-    if producer is None:
+    try:
+        producer = get_kafka_producer()
+        if producer is None:
+            return False
+        producer.send(KAFKA_EVENTS_TOPIC, event).get(timeout=5)
+        return True
+    except Exception as exc:
+        print(f"[rec-api] failed to publish event to kafka: {exc}")
         return False
-    producer.send(KAFKA_EVENTS_TOPIC, event).get(timeout=5)
-    return True
 
 
 def call_core_api(payload):

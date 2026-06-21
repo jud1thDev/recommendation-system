@@ -10,6 +10,11 @@ KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092"
 KAFKA_EVENTS_TOPIC = os.environ.get("KAFKA_EVENTS_TOPIC", "rec-events")
 REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
 MAX_EVENTS_PER_KEY = int(os.environ.get("MAX_EVENTS_PER_KEY", "200"))
+EVENT_KEY_PREFIXES = {
+    "product_impression": "impressions",
+    "product_click": "clicks",
+    "add_to_cart": "carts",
+}
 
 
 def connect_consumer():
@@ -48,13 +53,15 @@ def store_event(redis, event):
 
     if user_id:
         push_event(redis, f"events:user:{user_id}", event_json)
-        if event_type == "product_click":
-            push_event(redis, f"clicks:user:{user_id}", event_json)
+        event_prefix = EVENT_KEY_PREFIXES.get(event_type)
+        if event_prefix:
+            push_event(redis, f"{event_prefix}:user:{user_id}", event_json)
 
     if session_id:
         push_event(redis, f"events:session:{session_id}", event_json)
-        if event_type == "product_click":
-            push_event(redis, f"clicks:session:{session_id}", event_json)
+        event_prefix = EVENT_KEY_PREFIXES.get(event_type)
+        if event_prefix:
+            push_event(redis, f"{event_prefix}:session:{session_id}", event_json)
 
 
 def main():
