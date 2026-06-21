@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>카카오 선물 추천 시스템 v2</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent: #F5C700;
+    --accent-soft: #FDF3B0;
+    --accent-dark: #C49A00;
+    --bg: #F7F6F3;
+    --surface: #FFFFFF;
+    --surface-alt: #F0EEE9;
+    --border: #E4E1D9;
+    --text-primary: #1A1814;
+    --text-secondary: #6B6860;
+    --text-muted: #A09D97;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --font: -apple-system, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", "Malgun Gothic", Segoe UI, Roboto, sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--font);
+    background: #E8E5DF;
+  }
+
+  /* ── Presentation Shell ── */
+  #deck {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #stage {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    max-width: 100vw;
+    max-height: 100vh;
+    transform-origin: center center;
+  }
+
+  /* ── Slides ── */
+  .slide {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 20px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.10);
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.32s ease, transform 0.32s ease;
+  }
+  .slide.active {
+    display: flex;
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .slide.exit-left {
+    display: flex;
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+
+  /* ── Slide Header Bar ── */
+  .slide-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 40px 0;
+    flex-shrink: 0;
+  }
+  .slide-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 10px;
+  }
+  .slide-num {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Slide Body ── */
+  .slide-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 40px 36px;
+    overflow: hidden;
+  }
+
+  /* ── Typography ── */
+  .slide-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .slide-subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .slide-title .accent { color: var(--accent-dark); }
+
+  /* ── Cards ── */
+  .card-grid {
+    display: grid;
+    gap: 14px;
+    flex: 1;
+    align-content: start;
+  }
+  .card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 22px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .card.accent-card {
+    background: linear-gradient(135deg, #FFFBE0 0%, #FFF5B0 100%);
+    border-color: #EDD800;
+  }
+  .card-icon {
+    font-size: 22px;
+    margin-bottom: 2px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+  .card-body {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* ── Flow Steps ── */
+  .flow-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .step-num {
+    width: 28px;
+    height: 28px;
+    background: var(--text-primary);
+    color: #FFF;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-num.accent-step { background: var(--accent-dark); color: var(--text-primary); }
+  .step-content { flex: 1; }
+  .step-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+  .step-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 7px;
+    border-radius: 100px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+  .badge.accent { background: var(--accent); border-color: var(--accent-dark); color: #5C4800; }
+  .badge.green { background: #E8F8EC; border-color: #B4DDB8; color: #286E30; }
+  .badge.blue { background: #E8F0FC; border-color: #B4C8F0; color: #1F4BB5; }
+  .badge.red { background: #FDE8E8; border-color: #F0B4B4; color: #B52020; }
+  .badge.purple { background: #F3E8FC; border-color: #D0A8EE; color: #6A1B9A; }
+
+  /* ── Two-column layout ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    flex: 1;
+    align-content: start;
+  }
+  .two-col-left, .two-col-right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ── Code / Mono ── */
+  .mono {
+    font-family: "SF Mono", "Fira Code", "Menlo", monospace;
+    font-size: 11px;
+    background: #F0EEE9;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    color: var(--text-primary);
+    line-height: 1.7;
+  }
+  .mono .kw { color: #9B4F00; font-weight: 700; }
+  .mono .val { color: #1A6A3A; }
+  .mono .cmt { color: var(--text-muted); font-style: italic; }
+
+  /* ── Pill tags ── */
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .tag {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+  }
+  .tag.filled { background: var(--text-primary); color: #FFF; border-color: var(--text-primary); }
+  .tag.amber { background: var(--accent); color: #5C4800; border-color: var(--accent-dark); }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 12px 0;
+  }
+
+  /* ── Title Slide Specific ── */
+  .title-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-dark);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .hero-title {
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+  }
+  .hero-title .line2 { color: var(--accent-dark); }
+  .hero-desc {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 32px;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .meta-pill {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 14px;
+  }
+  .hero-deco {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #FEF08A44 0%, #FAE10011 60%, transparent 100%);
+    pointer-events: none;
+  }
+
+  /* ── Summary / Closing ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    flex: 1;
+    align-content: start;
+  }
+  .summary-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+  }
+  .summary-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-dark);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .summary-dot.muted { background: var(--text-muted); }
+
+  /* ── Roadmap ── */
+  .roadmap-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+  .roadmap-phase {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 88px;
+    flex-shrink: 0;
+  }
+  .roadmap-phase-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+  .roadmap-phase-name {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+  .roadmap-divider {
+    width: 1px;
+    background: var(--border);
+    margin: 0 2px;
+    flex-shrink: 0;
+  }
+  .roadmap-items {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+  }
+  .roadmap-item {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .roadmap-item.done {
+    background: #E8F8EC;
+    border-color: #B4DDB8;
+    color: #286E30;
+  }
+  .roadmap-item.partial {
+    background: #FFFBE0;
+    border-color: #EDD800;
+    color: #7A6000;
+  }
+  .roadmap-item.planned {
+    background: var(--surface-alt);
+    border-color: var(--border);
+    color: var(--text-muted);
+  }
+
+  /* ── What's New cards ── */
+  .whatsnew-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    flex: 1;
+    align-content: start;
+  }
+  .whatsnew-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .whatsnew-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .whatsnew-card.phase1::before { background: var(--accent-dark); }
+  .whatsnew-card.phase2a::before { background: #5C7DD8; }
+  .whatsnew-card.phase2b::before { background: #2E7D32; }
+
+  /* ── Nav Controls ── */
+  #controls {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.90);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0,0,0,0.10);
+    border-radius: 100px;
+    padding: 8px 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+    z-index: 100;
+    user-select: none;
+  }
+  .nav-btn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: var(--text-primary);
+    color: #FFF;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.12s;
+    flex-shrink: 0;
+  }
+  .nav-btn:hover { background: #333; transform: scale(1.08); }
+  .nav-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; }
+  #counter {
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+    min-width: 42px;
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+  #dots {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .dot.active {
+    background: var(--text-primary);
+    transform: scale(1.35);
+  }
+
+  /* ── Fullscreen hint ── */
+  #fullscreen-hint {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    font-size: 11px;
+    color: rgba(80,75,70,0.55);
+    font-family: var(--font);
+    letter-spacing: 0.06em;
+    z-index: 99;
+    pointer-events: none;
+  }
+
+  /* ── SVG Diagram specific ── */
+  .diagram-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  /* ── Scaling for non-1280 screens ── */
+  @media (max-width: 1300px) {
+    #stage { transform-origin: top center; }
+  }
+</style>
+</head>
+<body>
+
+<div id="deck">
+  <div id="stage">
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 1 : 타이틀 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide active" id="s1">
+      <div class="slide-header">
+        <span class="slide-tag">카카오 선물 추천</span>
+        <span class="slide-num">01 / 13</span>
+      </div>
+      <div class="slide-body" style="justify-content:center; position:relative; overflow:hidden;">
+        <div class="hero-deco"></div>
+        <div class="title-hero">
+          <div class="hero-eyebrow">Gift Recommendation System · v2</div>
+          <h1 class="hero-title">
+            카카오 선물<br>
+            <span class="line2">추천 시스템</span>
+          </h1>
+          <p class="hero-desc">
+            관계·상황·예산·취향·피할 조건과 최근 행동 데이터를 결합해<br>
+            카카오 선물 상품 200개 중 가장 적합한 선물을 추천합니다.
+          </p>
+          <div class="hero-meta">
+            <span class="meta-pill">Python · 표준 라이브러리</span>
+            <span class="meta-pill">OpenAI gpt-4o-mini</span>
+            <span class="meta-pill">Kafka · Redis</span>
+            <span class="meta-pill">Docker Compose</span>
+            <span class="meta-pill" style="background:#FFFBE0;border-color:#EDD800;color:#7A6000;">v2 — recency · cache · resilience</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 2 : What's New in v2 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s2">
+      <div class="slide-header">
+        <span class="slide-tag">What's New in v2</span>
+        <span class="slide-num">02 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">v2에서 달라진 것</h2>
+        <p class="slide-subtitle">두 페이즈에 걸쳐 추천 품질·성능·운영 안정성을 개선했습니다.</p>
+        <div class="whatsnew-grid">
+          <div class="whatsnew-card phase1">
+            <div class="card-icon">🎯</div>
+            <div class="card-title">Phase 1 — Recency-Aware 후보 생성</div>
+            <div class="card-body">
+              rec-api의 <code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">generate_candidates</code>가 요청의 최근 클릭 카테고리/태그에 <strong>슬롯을 예약</strong>(R ≈ K/6)합니다.<br><br>
+              인기도에 밀리던 니치 항목도 top-36에 진입.<br>
+              <span style="font-size:11px;color:#286E30;margin-top:4px;display:block;">검증: 무이력 0/7 → 최근 가전 클릭 시 가전 4/7 진입</span>
+            </div>
+          </div>
+          <div class="whatsnew-card phase2a">
+            <div class="card-icon">⚡</div>
+            <div class="card-title">Phase 2 — LLM 결과 캐시</div>
+            <div class="card-body">
+              core-api가 <code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">model + 후보 id 집합 + preference + limit + clickHistory</code> 시그니처로 Redis 캐시(TTL 300s).<br><br>
+              반복/유사 요청은 LLM 재호출 없이 즉답.<br>
+              응답에 <span class="badge blue">model.cached</span> 플래그 포함.
+            </div>
+          </div>
+          <div class="whatsnew-card phase2b">
+            <div class="card-icon">🛡️</div>
+            <div class="card-title">Phase 2 — 회복탄력성 & 관측성</div>
+            <div class="card-body">
+              <strong>Healthcheck</strong>: docker compose 부팅 순서 보장 (<code style="font-size:10px;background:#F0EEE9;padding:1px 4px;border-radius:3px;">service_healthy</code>).<br>
+              <strong>재시도</strong>: rec-api → core-api 1회 자동 재시도 후 폴백.<br>
+              <strong>/healthz</strong>: <code style="font-size:10px;background:#F0EEE9;padding:1px 4px;border-radius:3px;">coreApiOk</code> 다운스트림 포함 보고.<br>
+              <strong>requestId</strong> 구조적 로깅으로 추적 가능.
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px; display:flex; gap:12px; align-items:center;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#286E30;flex-shrink:0;"></div>
+            <span style="font-size:12px;color:var(--text-secondary);">완료</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#C49A00;flex-shrink:0;"></div>
+            <span style="font-size:12px;color:var(--text-secondary);">일부 완료 / 진행 중</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="width:10px;height:10px;border-radius:50%;background:var(--border);flex-shrink:0;"></div>
+            <span style="font-size:12px;color:var(--text-secondary);">계획</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 3 : 문제 & 목표 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s3">
+      <div class="slide-header">
+        <span class="slide-tag">문제 & 목표</span>
+        <span class="slide-num">03 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">왜 이 시스템이 필요한가?</h2>
+        <p class="slide-subtitle">카카오 선물하기의 방대한 상품 중, <strong>맥락에 맞는 선물</strong>을 추천하는 문제를 풉니다.</p>
+        <div class="card-grid cols-2" style="flex:1; align-content:center;">
+          <div class="card" style="border-left: 3px solid #E05C5C;">
+            <div class="card-icon">😓</div>
+            <div class="card-title">문제 1 — 선택지 과부하</div>
+            <div class="card-body">상품이 너무 많아 무엇을 골라야 할지 막막합니다. 관계나 상황을 고려한 탐색 경로가 없습니다.</div>
+          </div>
+          <div class="card" style="border-left: 3px solid #E05C5C;">
+            <div class="card-icon">🎯</div>
+            <div class="card-title">문제 2 — 획일화된 추천</div>
+            <div class="card-body">기존 베스트 상품 나열로는 개인의 취향, 피하고 싶은 품목, 예산 범위를 반영하기 어렵습니다.</div>
+          </div>
+          <div class="card accent-card">
+            <div class="card-icon">✅</div>
+            <div class="card-title">목표 1 — 맥락 인지 필터링</div>
+            <div class="card-body">관계(친구/부모/연인), 상황(생일/명절), 예산, 피할 조건을 1차 필터로 적용해 후보를 좁힙니다.</div>
+          </div>
+          <div class="card accent-card">
+            <div class="card-icon">⚡</div>
+            <div class="card-title">목표 2 — 실시간 행동 반영</div>
+            <div class="card-body">최근 클릭·노출·카트 이벤트를 즉시 feature store에 적재해 다음 추천에 바로 반영합니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 4 : 전체 아키텍처 (SVG) -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s4">
+      <div class="slide-header">
+        <span class="slide-tag">전체 아키텍처</span>
+        <span class="slide-num">04 / 13</span>
+      </div>
+      <div class="slide-body" style="gap:12px;">
+        <h2 class="slide-title">3계층 아키텍처 + 이벤트 파이프라인</h2>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 1100 490" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,'Apple SD Gothic Neo','Pretendard',sans-serif">
+            <defs>
+              <marker id="arr-dark" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+                <path d="M0,0 L8,3.5 L0,7 Z" fill="#1A1814" opacity="0.9"/>
+              </marker>
+              <marker id="arr-amber" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+                <path d="M0,0 L8,3.5 L0,7 Z" fill="#C49A00"/>
+              </marker>
+              <marker id="arr-green" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+                <path d="M0,0 L8,3.5 L0,7 Z" fill="#2E7D32"/>
+              </marker>
+            </defs>
+
+            <!-- ── Legend ── -->
+            <rect x="18" y="14" width="280" height="40" rx="10" fill="#F7F6F3" stroke="#E4E1D9" stroke-width="1"/>
+            <line x1="34" y1="34" x2="64" y2="34" stroke="#1A1814" stroke-width="2" stroke-dasharray="0" marker-end="url(#arr-dark)"/>
+            <text x="72" y="39" font-size="11" fill="#6B6860" font-weight="600">요청 경로</text>
+            <line x1="148" y1="34" x2="178" y2="34" stroke="#C49A00" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arr-amber)"/>
+            <text x="186" y="39" font-size="11" fill="#6B6860" font-weight="600">이벤트 경로</text>
+
+            <!-- ════ BROWSER ════ -->
+            <rect x="18" y="80" width="150" height="90" rx="12" fill="#FFFFFF" stroke="#E4E1D9" stroke-width="1.5"/>
+            <text x="93" y="116" text-anchor="middle" font-size="22">🌐</text>
+            <text x="93" y="136" text-anchor="middle" font-size="13" font-weight="800" fill="#1A1814">Browser</text>
+            <text x="93" y="153" text-anchor="middle" font-size="10" fill="#A09D97">View Layer</text>
+
+            <!-- ════ REC-API ════ -->
+            <rect x="280" y="58" width="240" height="330" rx="14" fill="#FFFBE0" stroke="#EDD800" stroke-width="2"/>
+            <text x="400" y="84" text-anchor="middle" font-size="12" font-weight="800" fill="#5C4800">rec-api</text>
+            <text x="400" y="100" text-anchor="middle" font-size="10" fill="#8A7700">Python http.server · :8000</text>
+            <!-- Inner boxes -->
+            <rect x="298" y="112" width="204" height="44" rx="8" fill="#FFF" stroke="#E4E1D9" stroke-width="1"/>
+            <text x="400" y="130" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1814">① 1차 필터링</text>
+            <text x="400" y="147" text-anchor="middle" font-size="10" fill="#6B6860">예산 · 피할조건 · 오디언스</text>
+
+            <rect x="298" y="170" width="204" height="52" rx="8" fill="#FFFBE0" stroke="#EDD800" stroke-width="1.5"/>
+            <text x="400" y="189" text-anchor="middle" font-size="11" font-weight="700" fill="#5C4800">② 후보 생성 (recency-aware)</text>
+            <text x="400" y="204" text-anchor="middle" font-size="10" fill="#8A7700">관련도 + 인기도 + recency 슬롯</text>
+            <text x="400" y="217" text-anchor="middle" font-size="10" fill="#8A7700">→ top-36</text>
+
+            <rect x="298" y="236" width="204" height="44" rx="8" fill="#FFF" stroke="#E4E1D9" stroke-width="1"/>
+            <text x="400" y="254" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1814">③ 이벤트 수집</text>
+            <text x="400" y="271" text-anchor="middle" font-size="10" fill="#6B6860">POST /v1/events → Kafka</text>
+
+            <!-- fallback note -->
+            <text x="400" y="308" text-anchor="middle" font-size="10" fill="#A09D97" font-style="italic">core 1회 재시도 → 인기도 fallback</text>
+            <text x="400" y="324" text-anchor="middle" font-size="10" fill="#A09D97" font-style="italic">/healthz coreApiOk 보고</text>
+            <text x="400" y="340" text-anchor="middle" font-size="10" fill="#A09D97" font-style="italic">requestId 구조적 로깅</text>
+
+            <!-- ════ CORE-API ════ -->
+            <rect x="640" y="58" width="230" height="240" rx="14" fill="#E8F0FC" stroke="#5C7DD8" stroke-width="2"/>
+            <text x="755" y="84" text-anchor="middle" font-size="12" font-weight="800" fill="#1F3C8A">core-api</text>
+            <text x="755" y="100" text-anchor="middle" font-size="10" fill="#3A5CB0">Python inference · :8001</text>
+
+            <rect x="656" y="112" width="198" height="44" rx="8" fill="#FFF" stroke="#B4C8F0" stroke-width="1"/>
+            <text x="755" y="130" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1814">④ 최근 행동 병합</text>
+            <text x="755" y="147" text-anchor="middle" font-size="10" fill="#6B6860">Redis feature store 조회</text>
+
+            <rect x="656" y="170" width="198" height="52" rx="8" fill="#E8F0FC" stroke="#5C7DD8" stroke-width="1.5"/>
+            <text x="755" y="189" text-anchor="middle" font-size="11" font-weight="700" fill="#1F3C8A">⑤ LLM 랭킹 + 결과 캐시</text>
+            <text x="755" y="204" text-anchor="middle" font-size="10" fill="#3A5CB0">gpt-4o-mini → 후보 정렬 + 이유</text>
+            <text x="755" y="217" text-anchor="middle" font-size="10" fill="#3A5CB0">Redis 캐시 TTL 300s</text>
+
+            <text x="755" y="258" text-anchor="middle" font-size="10" fill="#6B6860" font-style="italic">로컬 룰 랭커 폴백</text>
+            <text x="755" y="273" text-anchor="middle" font-size="10" fill="#6B6860" font-style="italic">id · rank · score · reason · badges · cached</text>
+
+            <!-- ════ KAFKA ════ -->
+            <rect x="280" y="435" width="140" height="52" rx="10" fill="#FFF3E0" stroke="#FFB74D" stroke-width="1.5"/>
+            <text x="350" y="457" text-anchor="middle" font-size="12" font-weight="700" fill="#E65100">Kafka</text>
+            <text x="350" y="473" text-anchor="middle" font-size="10" fill="#A09D97">KRaft · rec-events</text>
+
+            <!-- ════ EVENT-WORKER ════ -->
+            <rect x="480" y="435" width="140" height="52" rx="10" fill="#F3E5F5" stroke="#AB47BC" stroke-width="1.5"/>
+            <text x="550" y="457" text-anchor="middle" font-size="12" font-weight="700" fill="#6A1B9A">event-worker</text>
+            <text x="550" y="473" text-anchor="middle" font-size="10" fill="#A09D97">consumer · 가공</text>
+
+            <!-- ════ REDIS ════ -->
+            <rect x="680" y="435" width="160" height="52" rx="10" fill="#E8F5E9" stroke="#66BB6A" stroke-width="1.5"/>
+            <text x="760" y="457" text-anchor="middle" font-size="12" font-weight="700" fill="#1B5E20">Redis</text>
+            <text x="760" y="473" text-anchor="middle" font-size="10" fill="#6B6860">events · feature store · LLM 캐시</text>
+
+            <!-- ════ KAFKA-UI ════ -->
+            <rect x="895" y="435" width="120" height="52" rx="10" fill="#F7F6F3" stroke="#E4E1D9" stroke-width="1.5"/>
+            <text x="955" y="457" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6860">kafka-ui</text>
+            <text x="955" y="473" text-anchor="middle" font-size="10" fill="#A09D97">:8080 관측</text>
+
+            <!-- ══ ARROWS: REQUEST PATH (dark, solid) ══ -->
+            <path d="M 168,125 L 278,125" stroke="#1A1814" stroke-width="2" fill="none" marker-end="url(#arr-dark)"/>
+            <text x="223" y="116" text-anchor="middle" font-size="9" fill="#6B6860">POST</text>
+            <text x="223" y="127" text-anchor="middle" font-size="9" fill="#6B6860">/v1/rec</text>
+
+            <path d="M 520,160 L 638,160" stroke="#1A1814" stroke-width="2" fill="none" marker-end="url(#arr-dark)"/>
+            <text x="579" y="152" text-anchor="middle" font-size="9" fill="#6B6860">top-36</text>
+            <text x="579" y="163" text-anchor="middle" font-size="9" fill="#6B6860">candidates</text>
+
+            <path d="M 640,196" stroke="#1A1814" stroke-width="1.5" stroke-dasharray="4,3" fill="none"/>
+            <path d="M 640,196 L 522,196" stroke="#1A1814" stroke-width="1.5" stroke-dasharray="4,3" fill="none" marker-end="url(#arr-dark)"/>
+            <text x="581" y="190" text-anchor="middle" font-size="9" fill="#A09D97">ranked result</text>
+
+            <path d="M 280,143 L 170,143" stroke="#1A1814" stroke-width="1.5" stroke-dasharray="4,3" fill="none" marker-end="url(#arr-dark)"/>
+            <text x="225" y="157" text-anchor="middle" font-size="9" fill="#A09D97">cards</text>
+
+            <!-- ══ ARROWS: EVENT PATH (amber, dashed) ══ -->
+            <path d="M 350,388 L 350,433" stroke="#C49A00" stroke-width="2" stroke-dasharray="5,3" fill="none" marker-end="url(#arr-amber)"/>
+            <text x="370" y="415" font-size="9" fill="#C49A00">emit</text>
+
+            <path d="M 420,461 L 478,461" stroke="#C49A00" stroke-width="2" stroke-dasharray="5,3" fill="none" marker-end="url(#arr-amber)"/>
+            <path d="M 620,461 L 678,461" stroke="#C49A00" stroke-width="2" stroke-dasharray="5,3" fill="none" marker-end="url(#arr-amber)"/>
+
+            <path d="M 760,435 L 760,300" stroke="#2E7D32" stroke-width="2" fill="none" marker-end="url(#arr-green)"/>
+            <text x="772" y="375" font-size="9" fill="#2E7D32" font-weight="700">최근 행동</text>
+            <text x="772" y="387" font-size="9" fill="#2E7D32">+ 캐시 조회</text>
+
+            <path d="M 840,461 L 893,461" stroke="#C49A00" stroke-width="1.5" stroke-dasharray="3,3" fill="none" marker-end="url(#arr-amber)"/>
+
+            <path d="M 93,170 L 93,410 Q 93,430 113,430 L 278,430 Q 278,461 280,461" stroke="#C49A00" stroke-width="1.5" stroke-dasharray="4,3" fill="none" marker-end="url(#arr-amber)"/>
+            <text x="38" y="310" font-size="9" fill="#C49A00">click/</text>
+            <text x="38" y="323" font-size="9" fill="#C49A00">impr.</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 5 : 추천 요청 흐름 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s5">
+      <div class="slide-header">
+        <span class="slide-tag">추천 요청 흐름</span>
+        <span class="slide-num">05 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">Request Path — 4단계</h2>
+        <p class="slide-subtitle">사용자 조건 입력부터 카드 렌더까지의 데이터 흐름</p>
+        <div class="flow-list">
+          <div class="flow-step">
+            <div class="step-num accent-step">1</div>
+            <div class="step-content">
+              <div class="step-label">브라우저 → rec-api <span class="badge blue">POST /v1/recommendations</span></div>
+              <div class="step-desc">관계 · 상황 · 예산 · 성향(traits) · 피할 조건 · clickHistory를 JSON body로 전송합니다.</div>
+            </div>
+          </div>
+          <div class="flow-step" style="border-color:#EDD800; background:#FFFEF8;">
+            <div class="step-num accent-step">2</div>
+            <div class="step-content">
+              <div class="step-label">rec-api — 1차 필터 → 후보 생성 <span class="badge">top-36</span> <span class="badge accent">recency-aware</span></div>
+              <div class="step-desc">예산·피할 조건·오디언스로 1차 필터링 후, 관련도·인기도·<strong>recency 슬롯</strong>(R≈K/6)으로 top-36 추출. 최근 클릭 카테고리가 인기도에 밀려 사라지지 않도록 슬롯 예약. core-api로 candidateItems 전달.</div>
+            </div>
+          </div>
+          <div class="flow-step" style="border-color:#B4C8F0; background:#F8FAFF;">
+            <div class="step-num accent-step">3</div>
+            <div class="step-content">
+              <div class="step-label">core-api — Redis 최근 행동 병합 → LLM 랭킹 <span class="badge green">gpt-4o-mini</span> <span class="badge blue">캐시 TTL 300s</span></div>
+              <div class="step-desc">Redis에서 impressions·clicks·carts 즉시 조회해 최근 행동 병합. <strong>model + 후보 id 집합 + preference 시그니처</strong>로 Redis 캐시 먼저 확인 — 히트 시 LLM 재호출 없이 즉답. 미스 시 LLM이 후보 36개 안에서 정렬·이유·배지를 JSON으로 생성.</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num accent-step">4</div>
+            <div class="step-content">
+              <div class="step-label">결과 → rec-api → 브라우저 카드 렌더 <span class="badge accent">id · rank · score · reason · badges · cached</span></div>
+              <div class="step-desc">LLM 메타데이터와 함께 카드 렌더. 캐시 사용 여부가 <code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">model.cached</code> 플래그로 표시됩니다. 카드 클릭/노출 이벤트는 /v1/events로 emit되어 feature store를 갱신합니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 6 : rec-api 후보 생성 (recency-aware) -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s6">
+      <div class="slide-header">
+        <span class="slide-tag">rec-api · 후보 생성</span>
+        <span class="slide-num">06 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">rec-api — <span class="accent">Retrieval</span> 단계 (Recency-Aware)</h2>
+        <p class="slide-subtitle">좋은 후보를 뽑는 것이 추천 품질의 절반입니다. 필터 → 스코어링 → 다양성 → <strong>recency 슬롯</strong>의 4단 파이프라인.</p>
+        <div class="two-col" style="flex:1;">
+          <div class="two-col-left">
+            <div class="card">
+              <div class="card-icon">🔍</div>
+              <div class="card-title">① Hard Filter</div>
+              <div class="card-body">
+                <strong>예산 범위</strong>: minPrice ≤ 상품가 ≤ maxPrice<br>
+                <strong>피할 조건</strong>: 사용자가 선택한 카테고리(뷰티·주방 등) 완전 제외<br>
+                <strong>오디언스</strong>: 관계 태그와 맞지 않는 상품 필터
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-icon">📊</div>
+              <div class="card-title">② 관련도 스코어링</div>
+              <div class="card-body">
+                관계 매치 · 상황 매치 · 성향(traits) 매치 가중합<br>
+                인기도(popularityScore) 보정 추가<br>
+                → <strong>종합 점수</strong>로 내림차순 정렬
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🌈</div>
+              <div class="card-title">③ 카테고리 다양성</div>
+              <div class="card-body">
+                상위 점수 그룹 내에서 같은 카테고리가 뭉치지 않도록<br>
+                round-robin 다양성 보정
+              </div>
+            </div>
+          </div>
+          <div class="two-col-right">
+            <div class="card accent-card">
+              <div class="card-icon">🎯</div>
+              <div class="card-title">④ Recency 슬롯 예약 <span class="badge accent">Phase 1 신규</span></div>
+              <div class="card-body">
+                요청 <code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">clickHistory</code>의 최근 카테고리/태그 분석.<br>
+                전체 top-K(36) 중 <strong>R ≈ K/6 슬롯</strong>을 최근 클릭 카테고리 항목에 우선 예약.<br><br>
+                인기도 점수가 낮아도 최근 관심 카테고리는 반드시 후보에 진입.<br>
+                <span style="font-size:11px;color:#286E30;font-weight:700;margin-top:4px;display:block;">✓ 무이력: 가전 0/7 → 최근 가전 클릭 시: 가전 4/7 진입</span><br>
+                신규 유저(이력 없음)는 기존과 동일하게 동작.
+              </div>
+            </div>
+            <div class="card" style="flex:1; background: #F7F6F3;">
+              <div class="card-title" style="margin-bottom:10px;">데이터 소스</div>
+              <div class="mono">
+                <span class="cmt"># data/gifts.json</span><br>
+                <span class="kw">상품 수</span>: <span class="val">200개</span><br>
+                <span class="kw">필드</span>: id, name, price,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;category, tags,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;recommendationMeta<br>
+                <br>
+                <span class="cmt"># recommendationMeta</span><br>
+                <span class="kw">audiences</span>: <span class="val">["friend",…]</span><br>
+                <span class="kw">occasions</span>: <span class="val">["birthday",…]</span><br>
+                <span class="kw">traits</span>: <span class="val">6종 성향 태그</span><br>
+                <span class="kw">popularityScore</span>: <span class="val">0–100</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 7 : core-api LLM 랭킹 + 캐시 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s7">
+      <div class="slide-header">
+        <span class="slide-tag">core-api · LLM 랭킹</span>
+        <span class="slide-num">07 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">core-api — <span class="accent">Ranking</span> 단계 + LLM 캐시</h2>
+        <p class="slide-subtitle">후보 36개를 LLM이 최종 정렬하고, 반복 요청은 Redis 캐시로 즉답합니다.</p>
+        <div class="two-col" style="flex:1;">
+          <div class="two-col-left">
+            <div class="flow-list">
+              <div class="flow-step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <div class="step-label">Redis 최근 행동 조회</div>
+                  <div class="step-desc">impressions · clicks · carts 리스트를 user/session 키로 즉시 조회. 최근 본 카테고리를 컨텍스트에 주입.</div>
+                </div>
+              </div>
+              <div class="flow-step" style="border-color:#B4C8F0; background:#F8FAFF;">
+                <div class="step-num" style="background:#3A5CB0;">2</div>
+                <div class="step-content">
+                  <div class="step-label">LLM 캐시 확인 <span class="badge blue">Phase 2 신규</span></div>
+                  <div class="step-desc"><code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">model + 후보 id 집합 + preference + limit + clickHistory</code> 시그니처로 Redis 캐시 조회. 히트 시 <strong>즉시 반환</strong> — LLM 재호출 없음. Redis 장애 시 그냥 통과.</div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <div class="step-label">LLM 프롬프트 구성 (캐시 미스 시)</div>
+                  <div class="step-desc">관계/상황/성향 + 최근 행동 + 후보 36개 메타를 JSON으로 조합해 gpt-4o-mini에 전달.</div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                  <div class="step-label">구조화 출력 <span class="badge green">JSON mode</span></div>
+                  <div class="step-desc">LLM이 <code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">{id, rank, score, reason, badges}</code> 배열로 응답. 결과를 Redis에 TTL 300s로 저장. <code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">model.cached: false</code> 플래그 반환.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="two-col-right">
+            <div class="card accent-card">
+              <div class="card-icon">⚡</div>
+              <div class="card-title">폴백 체계</div>
+              <div class="card-body">
+                <strong>키 없음 / API 오류</strong> → 로컬 룰 기반 랭커<br>
+                <strong>core-api 다운</strong> → rec-api가 1회 재시도 후 인기도 점수만으로 직접 반환<br>
+                <strong>Redis 장애</strong> → 캐시 미스로 간주, LLM 직접 호출<br>
+                시스템 전체가 절대 죽지 않습니다.
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🔄</div>
+              <div class="card-title">LLM 전환 이력</div>
+              <div class="card-body">초기 Anthropic Claude 기반으로 설계 → OpenAI gpt-4o-mini로 전환. 계약 기반(contract-first) JSON 인터페이스 덕분에 엔진 교체가 내부 변경에만 국한됩니다.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🏷️</div>
+              <div class="card-title">badges 생성</div>
+              <div class="card-body">LLM이 상황별 뱃지(예: "생일 추천", "트렌디", "가성비")를 자동 생성해 카드 UI에 표시. 추천 이유도 한국어로 생성합니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 8 : 실시간 feature store -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s8">
+      <div class="slide-header">
+        <span class="slide-tag">실시간 Feature Store</span>
+        <span class="slide-num">08 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">이벤트 파이프라인 — <span class="accent">온라인 Feature Store</span></h2>
+        <p class="slide-subtitle">클릭 한 번이 다음 추천을 즉시 바꿉니다. 당근마켓 feature store의 recency 컨셉을 차용.</p>
+        <div class="card-grid cols-3" style="flex:1; align-content:center;">
+          <div class="card">
+            <div class="card-icon">📡</div>
+            <div class="card-title">이벤트 타입 3종</div>
+            <div class="card-body">
+              <span class="badge blue">product_impression</span><br><br>
+              <span class="badge green">product_click</span><br><br>
+              <span class="badge accent">add_to_cart</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔀</div>
+            <div class="card-title">파이프라인 흐름</div>
+            <div class="card-body">
+              Browser emit<br>
+              → rec-api <code style="font-size:10px; background:#F0EEE9; padding:1px 4px; border-radius:3px;">/v1/events</code><br>
+              → Kafka <code style="font-size:10px; background:#F0EEE9; padding:1px 4px; border-radius:3px;">rec-events</code><br>
+              → event-worker 가공<br>
+              → Redis 최신순 리스트
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🗂️</div>
+            <div class="card-title">Redis 키 구조</div>
+            <div class="card-body">
+              <code style="font-size:10px; background:#F0EEE9; padding:2px 5px; border-radius:3px; display:block; margin-bottom:5px;">impressions:{user|session}</code>
+              <code style="font-size:10px; background:#F0EEE9; padding:2px 5px; border-radius:3px; display:block; margin-bottom:5px;">clicks:{user|session}</code>
+              <code style="font-size:10px; background:#F0EEE9; padding:2px 5px; border-radius:3px; display:block;">carts:{user|session}</code>
+              <br>최신순 리스트, 즉시 조회
+            </div>
+          </div>
+          <div class="card accent-card" style="grid-column: span 2;">
+            <div class="card-icon">⚡</div>
+            <div class="card-title">핵심 가치 — 실시간 반영</div>
+            <div class="card-body">
+              Kafka + event-worker가 이벤트를 비동기 처리하므로 추천 요청 응답 속도에 영향 없음.<br>
+              Redis는 인메모리이므로 core-api가 밀리초 내에 최근 행동을 조회 가능.<br>
+              최근 본 카테고리가 <strong>다음 추천에 즉시 반영</strong>되고, <strong>recency 슬롯</strong>으로 후보 생성에도 영향을 줍니다.
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">👁️</div>
+            <div class="card-title">관측 — kafka-ui</div>
+            <div class="card-body">
+              <code style="font-size:10px; background:#F0EEE9; padding:2px 5px; border-radius:3px;">http://localhost:8080</code><br><br>
+              토픽 · 파티션 · 오프셋 · 메시지 실시간 확인
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 9 : 콜드스타트 & 회복탄력성 (updated) -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s9">
+      <div class="slide-header">
+        <span class="slide-tag">콜드스타트 & 회복탄력성</span>
+        <span class="slide-num">09 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">항상 동작하는 시스템</h2>
+        <p class="slide-subtitle">신규 유저도, 장애 상황도 graceful하게 처리합니다. v2에서 부팅 순서·재시도·헬스체크를 강화했습니다.</p>
+        <div class="card-grid cols-2" style="flex:1; align-content:center; gap:16px;">
+          <div class="card" style="border-top: 3px solid var(--accent-dark);">
+            <div class="card-icon">🆕</div>
+            <div class="card-title">콜드스타트 — 신규 유저</div>
+            <div class="card-body">
+              Redis에 행동 이력이 없는 신규 유저.<br><br>
+              → 인기도(popularityScore) + 관련도 스코어만으로 top-36 구성<br>
+              → recency 슬롯 비활성 (이력 없으면 기존과 동일)<br>
+              → LLM이 맥락(관계/상황/성향)만으로 랭킹 + 이유 생성<br><br>
+              행동 없어도 양질의 추천이 가능합니다.
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #5C7DD8;">
+            <div class="card-icon">🔧</div>
+            <div class="card-title">core-api 장애 <span class="badge blue">Phase 2 강화</span></div>
+            <div class="card-body">
+              core-api 타임아웃 또는 연결 불가 상황.<br><br>
+              → rec-api가 <strong>1회 자동 재시도</strong> 후 인기도 점수 기반으로 직접 결과 반환<br>
+              → <span class="badge red">fallback</span> 상태를 응답에 명시<br>
+              → <code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">/healthz</code>가 <code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">coreApiOk: false</code>로 보고
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #2E7D32;">
+            <div class="card-icon">🩺</div>
+            <div class="card-title">Healthcheck & 부팅 순서 <span class="badge green">Phase 2 신규</span></div>
+            <div class="card-body">
+              docker compose <code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">healthcheck</code> 구성:<br>
+              <strong>core/rec-api</strong>: python urlopen<br>
+              <strong>Redis</strong>: redis-cli ping<br><br>
+              <code style="font-size:11px;background:#F0EEE9;padding:1px 5px;border-radius:4px;">depends_on: service_healthy</code>로 의존 서비스가 준비된 후에만 기동. 부팅 순서 보장.
+            </div>
+          </div>
+          <div class="card accent-card" style="border-top: 3px solid var(--accent-dark);">
+            <div class="card-icon">🛡️</div>
+            <div class="card-title">설계 원칙 — Defence in Depth</div>
+            <div class="card-body">
+              <strong>3중 폴백 레이어</strong>:<br>
+              LLM 실패 → 로컬 룰 랭커<br>
+              core-api 실패 → rec-api 인기도 직접 반환 (1회 재시도 후)<br>
+              이벤트 파이프라인 장애 → 추천 요청 경로와 분리되어 있어 무관<br><br>
+              <code style="font-size:11px;background:#F5E87A;padding:1px 5px;border-radius:4px;">requestId</code> 구조적 로깅으로 장애 추적 가능.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 10 : 데이터 큐레이션 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s10">
+      <div class="slide-header">
+        <span class="slide-tag">데이터 큐레이션</span>
+        <span class="slide-num">10 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">성향(Traits) & 피할 조건</h2>
+        <p class="slide-subtitle">실제 데이터 <code style="font-size:13px; background:#F0EEE9; padding:2px 8px; border-radius:5px;">recommendationMeta.traits</code> 기반으로 큐레이션한 6종 성향과 명사형 제외 조건.</p>
+        <div class="two-col" style="flex:1;">
+          <div class="two-col-left">
+            <div class="card" style="flex:1;">
+              <div class="card-title" style="margin-bottom: 14px;">선호 성향 6종 <span class="badge green">traits</span></div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-dark);flex-shrink:0;"></div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--text-primary);">트렌디함</div>
+                    <div style="font-size:11px;color:var(--text-secondary);">요즘 유행하는 감성의 상품 선호</div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-dark);flex-shrink:0;"></div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--text-primary);">포장중요</div>
+                    <div style="font-size:11px;color:var(--text-secondary);">선물 포장·패키징 품질 중시</div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-dark);flex-shrink:0;"></div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--text-primary);">고급스러움</div>
+                    <div style="font-size:11px;color:var(--text-secondary);">프리미엄 브랜드 · 고급 소재 선호</div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-dark);flex-shrink:0;"></div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--text-primary);">실용적</div>
+                    <div style="font-size:11px;color:var(--text-secondary);">실생활에서 바로 쓸 수 있는 상품 중시</div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-dark);flex-shrink:0;"></div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--text-primary);">먹는것좋아함</div>
+                    <div style="font-size:11px;color:var(--text-secondary);">식품 · 음료 · 디저트 카테고리 선호</div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-dark);flex-shrink:0;"></div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--text-primary);">개인화</div>
+                    <div style="font-size:11px;color:var(--text-secondary);">이름·날짜 각인 등 맞춤 제작 상품 선호</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="two-col-right">
+            <div class="card" style="flex:1;">
+              <div class="card-title" style="margin-bottom:14px;">피할 조건 <span class="badge red">명사형 제외</span></div>
+              <div class="tag-cloud" style="margin-bottom:16px;">
+                <span class="tag">뷰티 / 향수</span>
+                <span class="tag">주방 / 리빙</span>
+                <span class="tag">각인 · 맞춤</span>
+              </div>
+              <div class="divider"></div>
+              <div class="card-body" style="margin-top:10px;">
+                피할 조건은 <strong>Hard Filter</strong> 단계에서 완전 제외됩니다.<br>
+                예: "향수 알레르기 있어요" → 뷰티/향수 카테고리 전체 제외 후 나머지로 추천.<br><br>
+                UI에서 명사형 태그로 제공되어 사용자가 직관적으로 선택합니다.
+              </div>
+            </div>
+            <div class="card accent-card">
+              <div class="card-title">큐레이션 원칙</div>
+              <div class="card-body">
+                실제 <code style="font-size:11px;">gifts.json</code> 데이터의 메타 필드를<br>분석해 도출한 실제 데이터 기반 분류.<br>
+                LLM 프롬프트에 traits 값이 직접 주입되어<br>이유 생성 시 사용됩니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 11 : 기술 스택 & 실행법 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s11">
+      <div class="slide-header">
+        <span class="slide-tag">기술 스택 & 실행법</span>
+        <span class="slide-num">11 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">Tech Stack & 실행</h2>
+        <p class="slide-subtitle">외부 웹 프레임워크 없이 Python 표준 라이브러리만으로 서버 구성. 완전 컨테이너 기반.</p>
+        <div class="two-col" style="flex:1;">
+          <div class="two-col-left">
+            <div class="card-grid cols-2" style="flex:0; grid-template-columns: 1fr 1fr;">
+              <div class="card">
+                <div class="card-title" style="font-size:12px;">Backend</div>
+                <div class="tag-cloud" style="margin-top:6px;">
+                  <span class="tag">Python</span>
+                  <span class="tag">http.server</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title" style="font-size:12px;">LLM</div>
+                <div class="tag-cloud" style="margin-top:6px;">
+                  <span class="tag amber">gpt-4o-mini</span>
+                  <span class="tag">OpenAI API</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title" style="font-size:12px;">Messaging</div>
+                <div class="tag-cloud" style="margin-top:6px;">
+                  <span class="tag">Apache Kafka</span>
+                  <span class="tag">KRaft</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title" style="font-size:12px;">Feature Store / Cache</div>
+                <div class="tag-cloud" style="margin-top:6px;">
+                  <span class="tag">Redis</span>
+                  <span class="tag amber">LLM 캐시</span>
+                </div>
+              </div>
+              <div class="card" style="grid-column:span 2;">
+                <div class="card-title" style="font-size:12px;">Infra</div>
+                <div class="tag-cloud" style="margin-top:6px;">
+                  <span class="tag">Docker Compose</span>
+                  <span class="tag">OrbStack</span>
+                  <span class="tag">kafka-ui</span>
+                  <span class="tag amber">healthcheck</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="two-col-right">
+            <div class="card" style="flex:1; background:#1A1814; border-color:#333;">
+              <div class="card-title" style="color:#FFF; margin-bottom:12px;">실행법</div>
+              <div style="font-family:'SF Mono','Fira Code','Menlo',monospace; font-size:12px; color:#E0D8C8; line-height:1.9;">
+                <span style="color:#A09D97;"># 1. 환경변수 설정</span><br>
+                <span style="color:#F5C700;">export</span> OPENAI_API_KEY=<span style="color:#86EFAC;">sk-...</span><br><br>
+                <span style="color:#A09D97;"># 2. 선택적 설정</span><br>
+                <span style="color:#F5C700;">export</span> OPENAI_MODEL=<span style="color:#86EFAC;">gpt-4o-mini</span><br>
+                <span style="color:#F5C700;">export</span> CANDIDATE_K=<span style="color:#86EFAC;">36</span><br><br>
+                <span style="color:#A09D97;"># 3. 실행</span><br>
+                <span style="color:#93C5FD;">docker compose up --build</span><br><br>
+                <span style="color:#A09D97;"># 엔드포인트</span><br>
+                <span style="color:#FFF;">프론트</span>: <span style="color:#F5C700;">http://localhost:8000</span><br>
+                <span style="color:#FFF;">kafka-ui</span>: <span style="color:#F5C700;">http://localhost:8080</span><br>
+                <span style="color:#FFF;">헬스체크</span>: <span style="color:#F5C700;">http://localhost:8000/healthz</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 12 : 로드맵 (신규) -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s12">
+      <div class="slide-header">
+        <span class="slide-tag">로드맵</span>
+        <span class="slide-num">12 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">개선 로드맵 — 5 Phases</h2>
+        <p class="slide-subtitle">완료된 것, 진행 중인 것, 계획된 것을 구분합니다.</p>
+        <div class="flow-list" style="gap:8px;">
+
+          <div class="roadmap-row">
+            <div class="roadmap-phase">
+              <div class="roadmap-phase-label">Phase 1</div>
+              <div class="roadmap-phase-name">추천<br>품질</div>
+            </div>
+            <div class="roadmap-divider"></div>
+            <div class="roadmap-items">
+              <div class="roadmap-item done">✓ 니치 recency 슬롯 예약</div>
+              <div class="roadmap-item planned">cart &gt; click 가중치 차등</div>
+              <div class="roadmap-item planned">노출 네거티브 피드백</div>
+            </div>
+          </div>
+
+          <div class="roadmap-row">
+            <div class="roadmap-phase">
+              <div class="roadmap-phase-label">Phase 2</div>
+              <div class="roadmap-phase-name">성능<br>안정성</div>
+            </div>
+            <div class="roadmap-divider"></div>
+            <div class="roadmap-items">
+              <div class="roadmap-item done">✓ LLM 결과 캐시 TTL 300s</div>
+              <div class="roadmap-item done">✓ Healthcheck & 부팅 순서</div>
+              <div class="roadmap-item done">✓ core-api 재시도 + 폴백</div>
+              <div class="roadmap-item done">✓ requestId 구조적 로깅</div>
+              <div class="roadmap-item planned">모델 티어링 (fast/quality)</div>
+            </div>
+          </div>
+
+          <div class="roadmap-row">
+            <div class="roadmap-phase">
+              <div class="roadmap-phase-label">Phase 3</div>
+              <div class="roadmap-phase-name">측정<br>실험</div>
+            </div>
+            <div class="roadmap-divider"></div>
+            <div class="roadmap-items">
+              <div class="roadmap-item planned">오프라인 평가 하니스</div>
+              <div class="roadmap-item planned">A/B 실험 프레임워크</div>
+              <div class="roadmap-item planned">추천 다양성 지표 (ILD)</div>
+            </div>
+          </div>
+
+          <div class="roadmap-row">
+            <div class="roadmap-phase">
+              <div class="roadmap-phase-label">Phase 4</div>
+              <div class="roadmap-phase-name">UX<br>향상</div>
+            </div>
+            <div class="roadmap-divider"></div>
+            <div class="roadmap-items">
+              <div class="roadmap-item planned">add_to_cart 이벤트 연결</div>
+              <div class="roadmap-item planned">"왜 추천했나요?" 설명 UI</div>
+              <div class="roadmap-item planned">로딩 UX / 스켈레톤</div>
+            </div>
+          </div>
+
+          <div class="roadmap-row">
+            <div class="roadmap-phase">
+              <div class="roadmap-phase-label">Phase 5</div>
+              <div class="roadmap-phase-name">확장<br>인프라</div>
+            </div>
+            <div class="roadmap-divider"></div>
+            <div class="roadmap-items">
+              <div class="roadmap-item planned">gRPC 전환 (JSON → Protobuf)</div>
+              <div class="roadmap-item planned">Redis ZSET 시간 윈도우</div>
+              <div class="roadmap-item planned">임베딩 기반 ANN retrieval</div>
+            </div>
+          </div>
+
+        </div>
+        <div style="margin-top:10px; display:flex; gap:14px; align-items:center;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#286E30;flex-shrink:0;"></div>
+            <span style="font-size:12px;color:var(--text-secondary);">✓ 완료</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="width:10px;height:10px;border-radius:50%;background:var(--border);flex-shrink:0;"></div>
+            <span style="font-size:12px;color:var(--text-secondary);">계획 / 협의 중</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SLIDE 13 : 정리 & 향후 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="slide" id="s13">
+      <div class="slide-header">
+        <span class="slide-tag">정리</span>
+        <span class="slide-num">13 / 13</span>
+      </div>
+      <div class="slide-body">
+        <h2 class="slide-title">핵심 설계 요약</h2>
+        <p class="slide-subtitle">Retrieval–Ranking 분리 + 실시간 Feature Store + 계약 기반 인터페이스의 결합. v2에서 recency·캐시·회복탄력성을 더했습니다.</p>
+        <div class="summary-grid" style="flex:1;">
+          <div class="summary-item">
+            <div class="summary-dot"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">후보 생성 / 랭킹 분리</div>
+              <div style="font-size:12px;color:var(--text-secondary);">rec-api(retrieval) + core-api LLM(ranking). 토큰 비용 통제와 추천 품질을 동시에 달성.</div>
+            </div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-dot"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">실시간 Feature Store</div>
+              <div style="font-size:12px;color:var(--text-secondary);">Kafka → event-worker → Redis 파이프라인으로 클릭 1번이 다음 추천을 즉시 바꿉니다.</div>
+            </div>
+          </div>
+          <div class="summary-item" style="border-color: var(--accent-dark); background: linear-gradient(135deg, #FFFBE0 0%, #FFF5B0 100%);">
+            <div class="summary-dot" style="background:#C49A00;"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Recency-Aware 후보 생성 (v2)</div>
+              <div style="font-size:12px;color:var(--text-secondary);">retrieval 단계에 recency 슬롯 예약(R≈K/6). 인기도에 밀리던 니치 최근행동 항목도 top-36에 진입. 무이력 0/7 → 최근 가전 클릭 시 4/7.</div>
+            </div>
+          </div>
+          <div class="summary-item" style="border-color: #5C7DD8; background: #F0F4FF;">
+            <div class="summary-dot" style="background:#1F4BB5;"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">LLM 결과 캐시 (v2)</div>
+              <div style="font-size:12px;color:var(--text-secondary);">model + 후보 id + preference 시그니처로 TTL 300s 캐시. 반복 요청은 LLM 재호출 없이 즉답. Redis 장애 시 그냥 통과.</div>
+            </div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-dot"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">계약 기반 설계</div>
+              <div style="font-size:12px;color:var(--text-secondary);">docs/api-contract.md로 rec-api↔core-api JSON 계약 고정. 향후 gRPC 전환도 메시지 구조 변경 없이 가능.</div>
+            </div>
+          </div>
+          <div class="summary-item" style="border-color: #2E7D32; background: #F0FBF2;">
+            <div class="summary-dot" style="background:#2E7D32;"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">3중 폴백 + 헬스체크 (v2)</div>
+              <div style="font-size:12px;color:var(--text-secondary);">LLM 오류 → 로컬 룰, core 다운 → 1회 재시도 후 인기도 직반환. Healthcheck + depends_on service_healthy로 부팅 순서 보장.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /stage -->
+</div><!-- /deck -->
+
+<!-- ── Controls ── -->
+<div id="controls">
+  <button class="nav-btn" id="btnPrev" onclick="nav(-1)" disabled>&#8592;</button>
+  <span id="counter">1 / 13</span>
+  <div id="dots"></div>
+  <button class="nav-btn" id="btnNext" onclick="nav(1)">&#8594;</button>
+</div>
+
+<div id="fullscreen-hint">F — 전체화면</div>
+
+<script>
+(function(){
+  const TOTAL = 13;
+  let current = 1;
+  let transitioning = false;
+
+  const stage = document.getElementById('stage');
+  const counter = document.getElementById('counter');
+  const dotsEl = document.getElementById('dots');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+
+  // Build dots
+  for(let i=1;i<=TOTAL;i++){
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===1?' active':'');
+    d.dataset.i = i;
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function slide(n){ return document.getElementById('s'+n); }
+
+  function updateUI(){
+    counter.textContent = current + ' / ' + TOTAL;
+    btnPrev.disabled = current <= 1;
+    btnNext.disabled = current >= TOTAL;
+    dotsEl.querySelectorAll('.dot').forEach(d=>{
+      d.classList.toggle('active', +d.dataset.i === current);
+    });
+  }
+
+  function goTo(n){
+    if(transitioning || n === current || n < 1 || n > TOTAL) return;
+    transitioning = true;
+    const from = slide(current);
+    const to = slide(n);
+
+    from.classList.add('exit-left');
+    from.classList.remove('active');
+
+    to.style.opacity = '0';
+    to.style.transform = 'translateX(40px)';
+    to.style.display = 'flex';
+
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        to.style.transition = 'opacity 0.30s ease, transform 0.30s ease';
+        to.style.opacity = '1';
+        to.style.transform = 'translateX(0)';
+      });
+    });
+
+    setTimeout(()=>{
+      from.classList.remove('exit-left');
+      from.style.display = '';
+      to.classList.add('active');
+      to.style.transition = '';
+      to.style.opacity = '';
+      to.style.transform = '';
+      to.style.display = '';
+      current = n;
+      updateUI();
+      transitioning = false;
+    }, 340);
+  }
+
+  function nav(dir){ goTo(current + dir); }
+  window.nav = nav;
+
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown') nav(1);
+    else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') nav(-1);
+    else if(e.key === 'f' || e.key === 'F'){
+      if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+      else document.exitFullscreen().catch(()=>{});
+    }
+  });
+
+  function scaleStage(){
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const scaleX = vw / 1280;
+    const scaleY = vh / 720;
+    const scale = Math.min(scaleX, scaleY);
+    stage.style.transform = `scale(${scale})`;
+    stage.style.width = '1280px';
+    stage.style.height = '720px';
+  }
+  window.addEventListener('resize', scaleStage);
+  scaleStage();
+
+  updateUI();
+})();
+</script>
+</body>
+</html>
