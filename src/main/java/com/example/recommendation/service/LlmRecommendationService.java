@@ -1,42 +1,33 @@
 package com.example.recommendation.service;
 
-import com.anthropic.client.AnthropicClient;
-import com.anthropic.client.okhttp.AnthropicOkHttpClient;
-import com.anthropic.models.messages.MessageCreateParams;
 import com.example.recommendation.dto.RecommendationRequest;
 import com.example.recommendation.dto.RecommendationResponse;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class LlmRecommendationService implements RecommendationService {
 
-    @Value("${anthropic.model:claude-opus-4-8}")
+    @Value("${openai.base-url:https://api.openai.com/v1}")
+    private String baseUrl;
+
+    @Value("${openai.model:gpt-4o-mini}")
     private String model;
 
-    @Value("${anthropic.max-tokens:1024}")
-    private long maxTokens;
+    @Value("${openai.max-tokens:1024}")
+    private int maxTokens;
 
     private final ObjectMapper objectMapper;
 
-    private volatile AnthropicClient client;
-
     public LlmRecommendationService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-    }
-
-    private AnthropicClient getClient() {
-        if (client == null) {
-            synchronized (this) {
-                if (client == null) {
-                    client = AnthropicOkHttpClient.fromEnv();
-                }
-            }
-        }
-        return client;
     }
 
     @Override
@@ -57,32 +48,40 @@ public class LlmRecommendationService implements RecommendationService {
     }
 
     private RecommendationResponse callLlm(RecommendationRequest request) {
-        String systemPrompt = buildSystemPrompt(request);
-        String userPrompt = buildUserPrompt(request);
+        String apiKey = System.getenv("OPENAI_API_KEY");
 
-        MessageCreateParams params = MessageCreateParams.builder()
-                .model(model)
-                .maxTokens(maxTokens)
-                .system(systemPrompt)
-                .addUserMessage(userPrompt)
-                .build();
+        Map<String, Object> requestBody = Map.of(
+                "model", model,
+                "max_tokens", maxTokens,
+                "response_format", Map.of("type", "json_object"),
+                "messages", List.of(
+                        Map.of("role", "system", "content", buildSystemPrompt(request)),
+                        Map.of("role", "user", "content", buildUserPrompt(request))
+                )
+        );
 
-        String rawText;
+        String rawJson;
         try {
-            var message = getClient().messages().create(params);
-            rawText = message.content().stream()
-                    .flatMap(b -> b.text().stream())
-                    .map(t -> t.text())
-                    .collect(Collectors.joining());
+            String responseBody = RestClient.create()
+                    .post()
+                    .uri(baseUrl + "/chat/completions")
+                    .header("Authorization", "Bearer " + apiKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(objectMapper.writeValueAsString(requestBody))
+                    .retrieve()
+                    .body(String.class);
+
+            JsonNode root = objectMapper.readTree(responseBody);
+            rawJson = root.at("/choices/0/message/content").asText();
         } catch (Exception e) {
             throw new RecommendationException("LLM API call failed: " + e.getMessage(), e);
         }
 
-        return parseResponse(rawText);
+        return parseResponse(rawJson);
     }
 
     private RecommendationResponse parseResponse(String rawText) {
-        String json = stripFences(rawText);
+        String json = stripToJson(rawText);
         try {
             RecommendationResponse response = objectMapper.readValue(json, RecommendationResponse.class);
             if (response == null || response.recommendations() == null || response.recommendations().size() < 3) {
@@ -94,7 +93,7 @@ public class LlmRecommendationService implements RecommendationService {
         }
     }
 
-    private String stripFences(String text) {
+    private String stripToJson(String text) {
         if (text == null) return "";
         String trimmed = text.strip();
 
@@ -121,7 +120,7 @@ public class LlmRecommendationService implements RecommendationService {
 
     private String buildSystemPrompt(RecommendationRequest request) {
         return """
-                You are a gift recommendation assistant. Output VALID JSON ONLY — no prose, no markdown, no code fences.
+                You are a gift recommendation assistant. Output VALID json ONLY — no prose, no markdown, no code fences.
 
                 Output format (strict):
                 {"recommendations":[{"name":string,"category":string,"estimatedPrice":integer,"reason":string}]}

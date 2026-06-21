@@ -1,28 +1,29 @@
 # recommendation-system
 
-선물 추천 서비스의 오케스트레이션 계층 vertical slice. 사용자 입력 → Claude LLM → 구조화 JSON 추천 응답.
+선물 추천 서비스의 오케스트레이션 계층 vertical slice. 사용자 입력 → ChatGPT LLM → 구조화 JSON 추천 응답.
 
 ## 요구사항
 
 - **Java 17** 이상
 - Gradle (./gradlew 포함)
-- Anthropic API 키
+- OpenAI API 키
 
 ## 환경 설정
 
-### 필수: ANTHROPIC_API_KEY
+### 필수: OPENAI_API_KEY
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
+export OPENAI_API_KEY=sk-...
 ```
 
-SDK가 자동으로 이 환경변수를 읽습니다. 하드코딩하지 마세요.
+앱이 자동으로 이 환경변수를 읽습니다. 하드코딩하지 마세요.
 
 ### 선택: LLM 모델 및 토큰 설정
 
 ```bash
-export LLM_MODEL=claude-opus-4-8          # 기본값: claude-opus-4-8
-export LLM_MAX_TOKENS=1024                # 기본값: 1024
+export OPENAI_MODEL=gpt-4o-mini           # 기본값: gpt-4o-mini
+export OPENAI_MAX_TOKENS=1024             # 기본값: 1024
+export OPENAI_BASE_URL=https://api.openai.com/v1  # (선택) 호환 엔드포인트
 ```
 
 참고: `.env.example` 파일에서 템플릿을 확인하세요.
@@ -153,5 +154,5 @@ public class CachingRecommendationService implements RecommendationService {
 
 - **Spring Boot** 3.3.5
 - **Java** 17
-- **Anthropic SDK** 2.34.0
+- **OpenAI SDK** (ChatGPT API)
 - **Gradle** (wrapper)

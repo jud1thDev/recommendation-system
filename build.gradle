@@ -20,7 +20,6 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.anthropic:anthropic-java:2.34.0'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
