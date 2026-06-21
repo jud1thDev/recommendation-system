@@ -1,2 +1,11 @@
 __pycache__/
 *.pyc
+
+# Leaf-agent harness — 로컬 전용
+.claude/
+# Secrets
+.env
+# Java build leftovers (이전 슬라이스)
+build/
+.gradle/
+bin/
