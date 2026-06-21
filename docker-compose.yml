@@ -1,0 +1,57 @@
+services:
+  kafka:
+    image: bitnami/kafka:3.7
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_ENABLE_KRAFT: "yes"
+      KAFKA_CFG_NODE_ID: "1"
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+    ports:
+      - "9092:9092"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  core-api:
+    build:
+      context: ./core-api
+    environment:
+      PORT: "8001"
+    ports:
+      - "8001:8001"
+
+  rec-api:
+    build:
+      context: ./rec-api
+    environment:
+      PORT: "8000"
+      CORE_API_URL: "http://core-api:8001"
+      DATA_DIR: "/app/data"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      KAFKA_EVENTS_TOPIC: "rec-events"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - core-api
+      - kafka
+
+  event-worker:
+    build:
+      context: ./event-worker
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      KAFKA_EVENTS_TOPIC: "rec-events"
+      REDIS_URL: "redis://redis:6379/0"
+      MAX_EVENTS_PER_KEY: "200"
+    depends_on:
+      - kafka
+      - redis

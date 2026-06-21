@@ -1,8 +1,13 @@
-const dataUrl = "../data/gifts.json";
+const dataUrl = "/data/gifts.json";
+const recommendationUrl = "/v1/recommendations";
+const eventUrl = "/v1/events";
+const userId = "user-001";
+const sessionId = getSessionId();
 
 const state = {
   products: [],
   clicks: JSON.parse(localStorage.getItem("gift-click-history") || "[]"),
+  renderSeq: 0,
 };
 
 const form = document.querySelector("#preferenceForm");
@@ -97,9 +102,11 @@ function getPreferences() {
   };
 }
 
-function render() {
+async function render() {
+  const seq = ++state.renderSeq;
   const preferences = getPreferences();
-  const recommendations = recommend(preferences, state.products);
+  const recommendations = await requestRecommendations(preferences);
+  if (seq !== state.renderSeq) return;
 
   resultCount.textContent = `${recommendations.length}개`;
   cards.innerHTML = recommendations.length
@@ -109,6 +116,50 @@ function render() {
   cards.querySelectorAll("[data-product-id]").forEach((card) => {
     card.addEventListener("click", () => saveClick(card.dataset.productId));
   });
+}
+
+async function requestRecommendations(preferences) {
+  try {
+    const response = await fetch(recommendationUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        requestId: `rec-${Date.now()}`,
+        user: { userId },
+        preference: {
+          relation: preferences.relation,
+          occasion: preferences.occasion,
+          budget: preferences.budget,
+          traits: preferences.traits,
+          avoidTags: preferences.avoidTags,
+        },
+        clickHistory: preferences.clickHistory,
+        limit: 8,
+      }),
+    });
+    if (!response.ok) throw new Error(`recommendation request failed: ${response.status}`);
+    const data = await response.json();
+    return mergeRecommendations(data.recommendations || []);
+  } catch (error) {
+    console.warn(error);
+    return recommend(preferences, state.products);
+  }
+}
+
+function mergeRecommendations(recommendations) {
+  const byId = new Map(state.products.map((product) => [product.id, product]));
+  return recommendations
+    .map((recommendation) => {
+      const product = byId.get(recommendation.id);
+      if (!product) return null;
+      return {
+        ...product,
+        score: recommendation.score,
+        reason: recommendation.reason || "추천 조건과 잘 맞는 상품입니다.",
+        badges: (recommendation.badges || ["추천"]).map((label) => ({ label, tone: "strong" })),
+      };
+    })
+    .filter(Boolean);
 }
 
 function recommend(preferences, products) {
@@ -208,18 +259,48 @@ function saveClick(productId) {
   const product = state.products.find((item) => item.id === productId);
   if (!product) return;
 
+  const click = {
+    productId: product.id,
+    category: product.category,
+    tags: product.tags,
+    priceValue: product.priceValue,
+    clickedAt: new Date().toISOString(),
+  };
+
   state.clicks = [
-    {
-      productId: product.id,
-      category: product.category,
-      tags: product.tags,
-      priceValue: product.priceValue,
-      clickedAt: new Date().toISOString(),
-    },
+    click,
     ...state.clicks.filter((click) => click.productId !== product.id),
   ].slice(0, 12);
 
   localStorage.setItem("gift-click-history", JSON.stringify(state.clicks));
+  collectEvent("product_click", product, click);
+}
+
+function collectEvent(type, product, click) {
+  fetch(eventUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId,
+      type,
+      occurredAt: click.clickedAt,
+      context: { sessionId },
+      product: {
+        productId: product.id,
+        category: product.category,
+        tags: product.tags,
+        priceValue: product.priceValue,
+      },
+    }),
+  }).catch((error) => console.warn(error));
+}
+
+function getSessionId() {
+  const existing = sessionStorage.getItem("gift-session-id");
+  if (existing) return existing;
+  const next = `session-${crypto.randomUUID()}`;
+  sessionStorage.setItem("gift-session-id", next);
+  return next;
 }
 
 function escapeHtml(value) {
@@ -232,18 +313,7 @@ function escapeHtml(value) {
 }
 
 window.renderGiftRecommendations = function renderGiftRecommendations(recommendations) {
-  const byId = new Map(state.products.map((product) => [product.id, product]));
-  const products = recommendations
-    .map((recommendation) => {
-      const product = byId.get(recommendation.id);
-      if (!product) return null;
-      return {
-        ...product,
-        reason: recommendation.reason || "추천 조건과 잘 맞는 상품입니다.",
-        badges: (recommendation.badges || ["추천"]).map((label) => ({ label, tone: "strong" })),
-      };
-    })
-    .filter(Boolean);
+  const products = mergeRecommendations(recommendations);
 
   resultCount.textContent = `${products.length}개`;
   cards.innerHTML = products.map(renderCard).join("");
